@@ -4,7 +4,7 @@
 export const BRAND = {
   name: "Thuê Xe Trung Hiếu",
   tagline: "Dịch vụ cho thuê xe",
-  owner: "Anh Hiếu",
+  owner: "Anh Trung",
 
   // Liên hệ
   phone: "0326 120 108",        // hiển thị

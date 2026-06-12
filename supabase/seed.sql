@@ -4,10 +4,10 @@
 -- Chạy lại được nhiều lần (idempotent nhờ on conflict).
 -- ============================================================
 
--- 1) Chủ xe chính (Anh Hiếu)
+-- 1) Chủ xe chính (Anh Trung)
 insert into owners (name, phone, zalo, facebook, address, is_primary)
 values (
-  'Anh Hiếu',
+  'Anh Trung',
   '0326120108',
   '0326120108',
   'fb.com/thuexetrunghieu',

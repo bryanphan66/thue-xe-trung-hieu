@@ -1,6 +1,6 @@
 # Hướng dẫn quản lý — Thuê Xe Trung Hiếu
 
-> Tài liệu này dành cho **anh Hiếu (chủ xe)**. Web không cần biết lập trình vẫn quản lý được:
+> Tài liệu này dành cho **anh Trung (chủ xe)**. Web không cần biết lập trình vẫn quản lý được:
 > mọi dữ liệu xe, ảnh, đánh giá, yêu cầu đối tác đều nằm trong **Supabase** — bấm chuột là sửa được.
 
 ---
@@ -45,7 +45,7 @@ Mở bảng `owners` → **Insert → Insert row**:
 
 | Cột | Điền gì |
 |-----|---------|
-| `name` | Anh Hiếu |
+| `name` | Anh Trung |
 | `phone` | 0326120108 |
 | `zalo` | 0326120108 |
 | `address` | Khu dân cư kênh 10, ấp Bờ Dâu, xã Thạnh Mỹ Tây, Tỉnh An Giang |
