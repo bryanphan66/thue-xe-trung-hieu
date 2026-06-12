@@ -17,7 +17,13 @@ export const BRAND = {
   mapLink: "https://maps.app.goo.gl/ptcb9NfjbUnhGPRb7", // nút "Chỉ đường" mở Google Maps app
   lat: 10.534045,
   lng: 105.16464,
+
+  // SEO — domain thật (đặt NEXT_PUBLIC_SITE_URL trên Vercel; mặc định placeholder).
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://thuexetrunghieu.vercel.app",
 } as const;
 
 export const tel = `tel:${BRAND.phoneRaw}`;
 export const zaloLink = `https://zalo.me/${BRAND.zalo}`;
+
+/** Số điện thoại E.164 cho schema.org / tel quốc tế: 0326120108 → +84326120108 */
+export const phoneE164 = `+84${BRAND.phoneRaw.replace(/^0/, "")}`;

@@ -6,6 +6,8 @@ import { Be_Vietnam_Pro, JetBrains_Mono } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { BRAND } from "@/config/brand";
 import ContactProvider from "@/components/ContactProvider";
+import JsonLd from "@/components/JsonLd";
+import { localBusinessJsonLd } from "@/lib/seo";
 import "../globals.css";
 
 const sans = Be_Vietnam_Pro({
@@ -33,9 +35,40 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "hero" });
+  const title = `${BRAND.name} — Cho thuê xe ${BRAND.address.split(",").slice(-2).join(",").trim()}`;
+  const description = t("lead");
   return {
-    title: `${BRAND.name} — ${BRAND.tagline}`,
-    description: t("lead"),
+    metadataBase: new URL(BRAND.siteUrl),
+    title: {
+      default: title,
+      template: `%s — ${BRAND.name}`,
+    },
+    description,
+    applicationName: BRAND.name,
+    keywords: [
+      "cho thuê xe",
+      "thuê xe có tài xế",
+      "thuê xe tự lái",
+      "thuê xe An Giang",
+      "thuê xe Thạnh Mỹ Tây",
+      "xe đám cưới",
+      "xe đi khám bệnh",
+      BRAND.name,
+    ],
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { vi: "/vi", en: "/en" },
+    },
+    openGraph: {
+      type: "website",
+      siteName: BRAND.name,
+      title,
+      description,
+      url: `/${locale}`,
+      locale: locale === "vi" ? "vi_VN" : "en_US",
+    },
+    twitter: { card: "summary", title, description },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -53,6 +86,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={`${sans.variable} ${mono.variable}`}>
       <body>
+        <JsonLd data={localBusinessJsonLd()} />
         <NextIntlClientProvider>
           <div className="app-shell">
             <ContactProvider>{children}</ContactProvider>

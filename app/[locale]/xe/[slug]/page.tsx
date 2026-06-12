@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { Users } from "lucide-react";
 import { getCar, getCars } from "@/lib/data";
 import { BRAND } from "@/config/brand";
+import { carJsonLd } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import Eyebrow from "@/components/Eyebrow";
 import Car3DViewer from "@/components/Car3DViewer";
@@ -28,12 +30,21 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const car = await getCar(slug);
   if (!car) return {};
+  const title = `${car.name} (${car.type})`;
   return {
-    title: `${car.name} — ${BRAND.name}`,
+    title,
     description: car.description,
+    alternates: { canonical: `/${locale}/xe/${slug}` },
+    openGraph: {
+      type: "website",
+      siteName: BRAND.name,
+      title: `${car.name} — ${BRAND.name}`,
+      description: car.description,
+      url: `/${locale}/xe/${slug}`,
+    },
   };
 }
 
@@ -53,6 +64,7 @@ export default async function CarDetailPage({
 
   return (
     <main className="screen">
+      <JsonLd data={carJsonLd(car)} />
       <BackBar name={car.name} />
 
       <Car3DViewer
