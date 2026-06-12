@@ -299,7 +299,7 @@ export default function JourneyHome({
                 <span className="lbl">Đang tải bản đồ…</span>
               </div>
               <iframe
-                title="Bản đồ nhà xe Trung Hiếu"
+                title={`Bản đồ ${BRAND.name}`}
                 src={mapEmbed}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"

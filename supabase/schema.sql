@@ -1,5 +1,5 @@
 -- ============================================================
--- Thuê Xe Trung Hiếu — Supabase schema
+-- Thuê Xe An Giang — Supabase schema
 -- Chạy trong Supabase SQL Editor. Thiết kế multi-vendor sẵn.
 -- App dùng fixtures khi chưa cấu hình env; điền env là tự dùng dữ liệu thật.
 -- ============================================================

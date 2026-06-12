@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * E2E cho web Thuê Xe Trung Hiếu — chạy mobile-first (Pixel 5).
+ * E2E cho web Thuê Xe An Giang — chạy mobile-first (Pixel 5).
  * App dùng fixtures khi chưa cấu hình Supabase → test chạy được ngay, không cần backend.
  */
 export default defineConfig({

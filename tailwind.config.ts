@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Tailwind config cho "Thuê Xe Trung Hiếu".
+ * Tailwind config cho "Thuê Xe An Giang".
  * Map đúng design tokens trong README. Dùng với Next.js (App Router) + TypeScript.
  *
  * Font: khai báo bằng next/font/google trong app/layout.tsx rồi gán biến CSS:

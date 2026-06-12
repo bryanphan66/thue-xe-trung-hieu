@@ -1,4 +1,4 @@
-# Hướng dẫn quản lý — Thuê Xe Trung Hiếu
+# Hướng dẫn quản lý — Thuê Xe An Giang
 
 > Tài liệu này dành cho **anh Trung (chủ xe)**. Web không cần biết lập trình vẫn quản lý được:
 > mọi dữ liệu xe, ảnh, đánh giá, yêu cầu đối tác đều nằm trong **Supabase** — bấm chuột là sửa được.

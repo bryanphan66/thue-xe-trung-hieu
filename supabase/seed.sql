@@ -1,5 +1,5 @@
 -- ============================================================
--- Thuê Xe Trung Hiếu — Dữ liệu khởi tạo (seed)
+-- Thuê Xe An Giang — Dữ liệu khởi tạo (seed)
 -- Chạy SAU file schema.sql. Nạp 1 chủ xe + 4 xe + vài đánh giá thật.
 -- Chạy lại được nhiều lần (idempotent nhờ on conflict).
 -- ============================================================
@@ -10,7 +10,7 @@ values (
   'Anh Trung',
   '0326120108',
   '0326120108',
-  'fb.com/thuexetrunghieu',
+  'fb.com/thuexeangiang',
   'Khu dân cư kênh 10, ấp Bờ Dâu, xã Thạnh Mỹ Tây, Tỉnh An Giang',
   true
 )
