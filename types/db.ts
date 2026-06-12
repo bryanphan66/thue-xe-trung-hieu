@@ -14,6 +14,10 @@ export type Car = {
   spinFrames?: string[]; // ảnh xoay 360° (car_photos.kind = 'spin_frame'), sắp theo sort_order
   model3dUrl?: string | null; // .glb mô hình 3D (null = dùng model mẫu)
   posterUrl?: string | null; // poster ảnh thật fallback cho 3D
+  // Khuyến mãi (cấu hình ở config/promos.ts, gộp theo slug) — giá gạch + nhãn ưu đãi.
+  oldPriceDriver?: string | null; // giá gạch có tài xế (đã format)
+  oldPriceSelf?: string | null; // giá gạch tự lái
+  promo?: string | null; // nhãn ưu đãi, vd "Ưu đãi tháng 6"
 };
 
 export type Testimonial = {

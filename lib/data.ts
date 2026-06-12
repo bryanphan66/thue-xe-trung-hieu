@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { fixtureCars, fixtureTestimonials } from "./fixtures";
+import { PROMOS } from "@/config/promos";
 import type { Car, Testimonial } from "@/types/db";
 
 /**
@@ -31,6 +32,7 @@ function mapRow(r: CarRow): Car {
   const sorted = (r.car_photos ?? []).slice().sort((a, b) => a.sort_order - b.sort_order);
   const spinFrames = sorted.filter((p) => p.kind === "spin_frame").map((p) => p.url);
   const photos = sorted.filter((p) => p.kind !== "spin_frame").map((p) => p.url);
+  const promo = PROMOS[r.slug];
   return {
     slug: r.slug,
     name: r.name,
@@ -45,6 +47,9 @@ function mapRow(r: CarRow): Car {
     spinFrames: spinFrames.length ? spinFrames : undefined,
     model3dUrl: r.model_3d_url,
     posterUrl: r.poster_url,
+    oldPriceDriver: promo?.oldDriver ?? null,
+    oldPriceSelf: promo?.oldSelf ?? null,
+    promo: promo?.label ?? null,
   };
 }
 

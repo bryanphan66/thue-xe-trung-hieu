@@ -9,10 +9,11 @@ export default async function PriceTable({ car }: { car: Car }) {
   const ta = await getTranslations("actions");
 
   const rows = [
-    { label: tc("priceDriver"), price: car.priceDriver, note: t("driverNote") },
+    { label: tc("priceDriver"), price: car.priceDriver, old: car.oldPriceDriver, note: t("driverNote") },
     {
       label: tc("priceSelf"),
       price: car.priceSelf,
+      old: car.priceSelf ? car.oldPriceSelf : null,
       note: car.priceSelf ? t("selfNote") : t("selfNoteNone"),
     },
   ];
@@ -20,7 +21,10 @@ export default async function PriceTable({ car }: { car: Car }) {
   return (
     <section className="section">
       <div className="container">
-        <Eyebrow>{t("priceEyebrow")}</Eyebrow>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <Eyebrow>{t("priceEyebrow")}</Eyebrow>
+          {car.promo && <span className="promo-chip">{car.promo}</span>}
+        </div>
         <div
           style={{
             marginTop: 18,
@@ -59,6 +63,11 @@ export default async function PriceTable({ car }: { car: Car }) {
                   )}
                 </span>
               </div>
+              {r.old && (
+                <div className="was" style={{ textAlign: "right" }}>
+                  {r.old} {ta("perDay")}
+                </div>
+              )}
               <div className="muted" style={{ fontSize: 13.5, marginTop: 7 }}>
                 {r.note}
               </div>

@@ -78,6 +78,7 @@ function CarCard({ car, onCall }: { car: Car; onCall: () => void }) {
       <div style={{ padding: 18 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
           <h3 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.035em" }}>{car.name}</h3>
+          {car.promo && <span className="promo-chip">{car.promo}</span>}
         </div>
         <div className="muted linkrow" style={{ fontSize: 14.5, marginTop: 6 }}>
           <span className="linkrow" style={{ gap: 6 }}>
@@ -93,6 +94,7 @@ function CarCard({ car, onCall }: { car: Car; onCall: () => void }) {
               {car.priceDriver}
               <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}> đ/ngày</span>
             </div>
+            {car.oldPriceDriver && <div className="was">{car.oldPriceDriver} đ</div>}
           </div>
           <div style={{ width: 1, background: "var(--hairline)" }} />
           <div style={{ flex: 1, padding: "13px 0 13px 16px" }}>
@@ -107,6 +109,7 @@ function CarCard({ car, onCall }: { car: Car; onCall: () => void }) {
                 <span className="muted" style={{ fontSize: 15, fontWeight: 600 }}>Liên hệ</span>
               )}
             </div>
+            {car.priceSelf && car.oldPriceSelf && <div className="was">{car.oldPriceSelf} đ</div>}
           </div>
         </div>
         <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
