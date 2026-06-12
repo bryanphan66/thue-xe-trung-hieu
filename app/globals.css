@@ -490,9 +490,9 @@ a {
 /* ===== Journey rail + tiny car ===== */
 .journey { position: relative; }
 .spine { position: absolute; left: 19px; top: 0; bottom: 0; width: 2px; background: var(--hairline); border-radius: 2px; z-index: 1; }
-.spine-fill { position: absolute; left: 19px; top: 0; width: 2px; height: 0; background: var(--accent); opacity: 0.55; border-radius: 2px; z-index: 2; will-change: height; }
-.rail-start { position: absolute; top: -3px; left: 14px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--hairline); background: var(--bg); z-index: 4; }
-.rail-dest { position: absolute; bottom: -10px; left: 12px; color: var(--accent); opacity: 0.7; z-index: 5; display: flex; }
+.spine-fill { position: absolute; left: 19px; top: 0; width: 2px; height: 0; background: var(--ink); opacity: 0.82; border-radius: 2px; z-index: 2; will-change: height; }
+.rail-start { position: absolute; top: -3px; left: 14px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ink); background: var(--bg); z-index: 4; }
+.rail-dest { position: absolute; bottom: -10px; left: 12px; color: var(--ink); opacity: 0.85; z-index: 5; display: flex; }
 .rail-car { position: absolute; left: 20px; top: 0; z-index: 6; will-change: transform; opacity: 0; transition: opacity 0.4s ease; }
 .rail-car.on { opacity: 1; }
 .car { position: relative; width: 18px; height: 31px; margin-left: -9px; margin-top: -15px; transform-origin: center; filter: drop-shadow(0 3px 4px rgba(11, 11, 12, 0.28)); }
@@ -565,7 +565,7 @@ a {
 .chapter { position: relative; padding: 64px 22px 0 46px; }
 .chapter:last-child { padding-bottom: 8px; }
 .node { position: absolute; left: 13px; top: 70px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 2px solid var(--hairline); z-index: 4; transition: border-color 0.35s ease, background 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease; }
-.node.on { border-color: var(--accent); background: var(--accent); transform: scale(1.05); box-shadow: 0 0 0 4px rgba(45, 91, 255, 0.12); }
+.node.on { border-color: var(--ink); background: var(--ink); transform: scale(1.05); box-shadow: 0 0 0 4px rgba(11, 11, 12, 0.1); }
 .chapter-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .chapter-num { font-family: var(--font-mono), "JetBrains Mono", monospace; font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: 0.04em; opacity: 0; transform: translateY(8px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
 .chapter-rule { flex: 1; height: 1px; background: var(--hairline); transform: scaleX(0); transform-origin: left; transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s; }
