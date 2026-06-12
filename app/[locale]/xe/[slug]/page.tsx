@@ -20,6 +20,9 @@ import DetailCta from "@/components/DetailCta";
 const CAR_MODEL_URL =
   "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/ToyCar/glTF-Binary/ToyCar.glb";
 
+// ISR: chi tiết xe render lại sau 60s; xe mới thêm trong Supabase tự render khi có người mở.
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const cars = await getCars();
   return cars.map((car) => ({ slug: car.slug }));
