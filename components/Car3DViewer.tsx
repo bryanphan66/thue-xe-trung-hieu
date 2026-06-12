@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Box, RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ModelViewerElement } from "@/types/model-viewer";
 
 /**
@@ -24,6 +25,7 @@ export default function Car3DViewer({
   poster?: string;
   name: string;
 }) {
+  const t = useTranslations("detail");
   const ref = useRef<ModelViewerElement>(null);
   const [ready, setReady] = useState(false); // đã đăng ký custom element
   const [loaded, setLoaded] = useState(false);
@@ -66,7 +68,7 @@ export default function Car3DViewer({
           ref={ref}
           src={src}
           poster={poster}
-          alt={`Mô hình 3D ${name}`}
+          alt={`${t("model3d")} ${name}`}
           loading="eager"
           reveal="auto"
           camera-controls=""
@@ -92,14 +94,14 @@ export default function Car3DViewer({
             <>
               <span className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
               <span className="rounded-md border border-stage-hairline bg-black/50 px-2.5 py-1 font-mono text-[11px] uppercase text-stage-muted">
-                Đang tải mô hình 3D…
+                {t("loading3d")}
               </span>
             </>
           ) : poster ? (
             <img src={poster} alt={name} className="h-full w-full object-cover" />
           ) : (
             <span className="font-mono text-[11px] uppercase text-stage-muted">
-              Poster ảnh xe · {name}
+              {t("poster", { name })}
             </span>
           )}
         </div>
@@ -108,14 +110,14 @@ export default function Car3DViewer({
       {/* Nhãn góc */}
       <div className="absolute left-[18px] top-4 flex items-center gap-2 text-stage-muted">
         <Box size={16} />
-        <span className="font-mono text-[11px] uppercase tracking-[.06em]">Mô hình 3D</span>
+        <span className="font-mono text-[11px] uppercase tracking-[.06em]">{t("model3d")}</span>
       </div>
 
       {/* Gợi ý cử chỉ (tự fade) */}
       {loaded && !failed && (
         <div className="pointer-events-none absolute inset-x-0 bottom-[70px] flex animate-[hintFade_5.5s_ease_forwards] justify-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-stage-hairline bg-black/55 px-3.5 py-2 text-[13.5px] font-medium text-stage-ink backdrop-blur">
-            <RotateCcw size={16} /> Vuốt để xoay · chụm để zoom
+            <RotateCcw size={16} /> {t("gestureHint")}
           </span>
         </div>
       )}
@@ -126,7 +128,7 @@ export default function Car3DViewer({
         onClick={() => ref.current?.activateAR?.()}
         className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-[12px] bg-stage-ink px-4 py-[11px] text-[14.5px] font-semibold text-ink"
       >
-        <Box size={17} /> Xem trong sân nhà bạn
+        <Box size={17} /> {t("ar")}
       </button>
 
       {/* keyframes cho gợi ý cử chỉ — hoặc khai báo trong tailwind.config */}
