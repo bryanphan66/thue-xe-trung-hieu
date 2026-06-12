@@ -1,0 +1,29 @@
+name: Deploy to Dokploy
+
+# Tự động deploy: mỗi lần push lên main → gọi API Dokploy build & release lại.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {} # cho phép bấm chạy tay trong tab Actions
+
+concurrency:
+  group: deploy-dokploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Dokploy deployment
+        env:
+          DOKPLOY_URL: https://dokploy-dev.sunny.net.vn
+          DOKPLOY_APP_ID: b695StM21PU0PxrDtIMJd
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+        run: |
+          code=$(curl -s -o /tmp/resp.txt -w "%{http_code}" \
+            -X POST "$DOKPLOY_URL/api/application.deploy" \
+            -H "x-api-key: $DOKPLOY_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$DOKPLOY_APP_ID\"}")
+          echo "HTTP $code"; cat /tmp/resp.txt
+          test "$code" = "200"
