@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { BRAND, tel, zaloLink } from "@/config/brand";
 import { SVC_SUGGEST, formatVnd, type ServiceIcon } from "@/config/services";
+import { groupCarsBySeats, type SeatGroup } from "@/lib/seatGroups";
 import type { Car } from "@/types/db";
 import type { ContactState } from "@/hooks/useContact";
 
@@ -46,11 +47,13 @@ export function ContactSheet({
   const svc = isService ? open.service : null;
   const q = isQuote ? open.data : null;
 
-  let suggest: Car[] = [];
+  // Gợi ý theo LOẠI XE (số chỗ) cho dịch vụ.
+  let suggest: SeatGroup[] = [];
   if (svc) {
-    const names = SVC_SUGGEST[svc.icon] ?? [];
-    suggest = cars.filter((c) => names.includes(c.name));
-    if (suggest.length === 0) suggest = cars.slice(0, 3);
+    const groups = groupCarsBySeats(cars);
+    const seatsWanted = SVC_SUGGEST[svc.icon] ?? [];
+    suggest = groups.filter((g) => seatsWanted.includes(g.seats));
+    if (suggest.length === 0) suggest = groups;
   }
 
   const heading = isQuote
@@ -87,7 +90,7 @@ export function ContactSheet({
         {isQuote && q && (
           <div className="mt-[18px] rounded-xl border border-hairline bg-bg px-4 py-3.5">
             {[
-              ["Xe", q.carName],
+              ["Loại xe", q.label],
               ["Hình thức", q.mode === "self" ? "Tự lái" : "Có tài xế"],
               ["Số ngày", `${q.days} ngày`],
               ...(q.far ? [["Lưu ý", "Đi xa / qua đêm"]] : []),
@@ -110,14 +113,14 @@ export function ContactSheet({
               Đang sẵn xe phù hợp · bấm để xem
             </div>
             <div className="mt-2.5 flex flex-wrap gap-2">
-              {suggest.map((c) => (
+              {suggest.map((g) => (
                 <button
-                  key={c.slug}
-                  onClick={() => onPickCar(c.slug)}
+                  key={g.seats}
+                  onClick={() => g.cars[0] && onPickCar(g.cars[0].slug)}
                   className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-3 py-2 text-sm font-semibold"
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                  {c.name}
+                  {g.label}
                   <ArrowRight size={15} className="text-muted" />
                 </button>
               ))}

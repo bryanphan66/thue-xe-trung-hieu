@@ -2,37 +2,36 @@
 
 import { useState } from "react";
 import { MessageCircle } from "lucide-react";
-import type { Car } from "@/types/db";
 import { parsePrice, formatVnd } from "@/config/services";
+import type { SeatGroup } from "@/lib/seatGroups";
 import type { QuoteRequest } from "@/hooks/useContact";
 
 /**
- * QuickQuote — báo giá nhanh: chọn xe → hình thức → số ngày → (đi xa?) → tạm tính ngay.
- * "Gửi yêu cầu này" → onQuote(req) mở ContactSheet kiểu quote.
+ * QuickQuote — báo giá nhanh theo SỐ CHỖ: chọn loại (5/7/16 chỗ) → hình thức →
+ * số ngày → (đi xa?) → tạm tính ngay. "Gửi yêu cầu" → ContactSheet kiểu quote.
  */
 export function QuickQuote({
-  cars,
+  groups,
   onQuote,
 }: {
-  cars: Car[];
+  groups: SeatGroup[];
   onQuote: (req: QuoteRequest) => void;
 }) {
-  const [carSlug, setCarSlug] = useState(cars[0]?.slug ?? "");
+  const [seats, setSeats] = useState(groups[0]?.seats ?? 0);
   const [mode, setMode] = useState<"driver" | "self">("driver");
   const [days, setDays] = useState(1);
   const [far, setFar] = useState(false);
   const [pulse, setPulse] = useState(false);
 
-  const car = cars.find((c) => c.slug === carSlug) ?? cars[0];
+  const g = groups.find((x) => x.seats === seats) ?? groups[0];
 
-  // "Nảy" số tạm tính khi đổi lựa chọn — gọi trong handler (không phải effect).
   const bump = () => {
     setPulse(true);
     window.setTimeout(() => setPulse(false), 260);
   };
-  const pickCar = (c: Car) => {
-    setCarSlug(c.slug);
-    if (mode === "self" && !c.priceSelf) setMode("driver");
+  const pickSeats = (grp: SeatGroup) => {
+    setSeats(grp.seats);
+    if (mode === "self" && !grp.priceSelf) setMode("driver");
     bump();
   };
   const pickMode = (m: "driver" | "self") => {
@@ -44,23 +43,21 @@ export function QuickQuote({
     bump();
   };
 
-  const unit = parsePrice(mode === "self" ? car?.priceSelf ?? null : car?.priceDriver ?? null);
+  if (!g) return null;
+  const unit = parsePrice(mode === "self" ? g.priceSelf : g.priceDriver);
   const total = unit * days;
-
-  if (!car) return null;
-  const shortName = (n: string) => n.replace(/^(Toyota|Mazda|Ford|Hyundai|Kia)\s/, "");
 
   return (
     <div className="est-card">
-      <div className="est-label">Chọn xe</div>
+      <div className="est-label">Chọn loại xe (số chỗ)</div>
       <div className="est-chips">
-        {cars.map((c) => (
+        {groups.map((grp) => (
           <button
-            key={c.slug}
-            className={`est-chip ${c.slug === carSlug ? "on" : ""}`}
-            onClick={() => pickCar(c)}
+            key={grp.seats}
+            className={`est-chip ${grp.seats === seats ? "on" : ""}`}
+            onClick={() => pickSeats(grp)}
           >
-            {shortName(c.name)}
+            {grp.label}
           </button>
         ))}
       </div>
@@ -74,10 +71,10 @@ export function QuickQuote({
         </button>
         <button
           className={mode === "self" ? "on" : ""}
-          disabled={!car.priceSelf}
-          onClick={() => car.priceSelf && pickMode("self")}
+          disabled={!g.priceSelf}
+          onClick={() => g.priceSelf && pickMode("self")}
         >
-          Tự lái{!car.priceSelf ? " · không có" : ""}
+          Tự lái{!g.priceSelf ? " · không có" : ""}
         </button>
       </div>
 
@@ -121,7 +118,7 @@ export function QuickQuote({
       >
         <div>
           <div className="muted" style={{ fontSize: 13, fontWeight: 500 }}>
-            Tạm tính
+            Tạm tính {g.multiple ? "(từ)" : ""}
           </div>
           <div className={`est-total ${pulse ? "pulse" : ""}`}>
             {formatVnd(total)}
@@ -139,9 +136,7 @@ export function QuickQuote({
       <button
         className="btn btn-primary"
         style={{ marginTop: 18 }}
-        onClick={() =>
-          onQuote({ carSlug: car.slug, carName: car.name, mode, days, far, total })
-        }
+        onClick={() => onQuote({ label: g.label, mode, days, far, total })}
       >
         <MessageCircle size={18} /> Gửi yêu cầu này
       </button>

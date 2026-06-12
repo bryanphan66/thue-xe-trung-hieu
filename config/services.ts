@@ -12,12 +12,12 @@ export const SERVICES: Service[] = [
   { icon: "navigation", label: "Đi xa · Việc gấp", sub: "Sẵn sàng 24/7" },
 ];
 
-/** Gợi ý xe (theo TÊN) cho từng dịch vụ; lọc theo xe đang có, fallback = mọi xe. */
-export const SVC_SUGGEST: Record<ServiceIcon, string[]> = {
-  stethoscope: ["Toyota Vios", "Toyota Innova", "Toyota Innova 2.0E"],
-  heart: ["Mazda CX-5", "Toyota Innova", "Toyota Innova 2.0E"],
-  palm: ["Toyota Innova", "Toyota Innova 2.0E", "Ford Transit"],
-  navigation: ["Toyota Innova", "Toyota Innova 2.0E", "Ford Transit"],
+/** Gợi ý LOẠI XE (theo số chỗ) cho từng mục đích; lọc theo loại đang có, fallback = mọi loại. */
+export const SVC_SUGGEST: Record<ServiceIcon, number[]> = {
+  stethoscope: [5, 7], // khám bệnh: xe nhỏ gọn
+  heart: [5, 7], // cưới: sedan đẹp / 7 chỗ gia đình
+  palm: [7, 16], // du lịch: đông người
+  navigation: [7, 16], // đi xa: rộng rãi
 };
 
 /** "1.200.000" → 1200000 */

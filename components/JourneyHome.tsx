@@ -25,6 +25,7 @@ import { useContactActions } from "@/components/ContactProvider";
 import { JourneyRail, Chapter } from "@/components/JourneyRail";
 import { HeroShowcase } from "@/components/HeroShowcase";
 import { QuickQuote } from "@/components/QuickQuote";
+import { groupCarsBySeats, type SeatGroup } from "@/lib/seatGroups";
 import { Reveal } from "@/components/Reveal";
 import Eyebrow from "@/components/Eyebrow";
 import Photo from "@/components/Photo";
@@ -51,75 +52,78 @@ function SteeringWheel({ size = 26, className = "" }: { size?: number; className
   );
 }
 
-function CarCard({ car, onCall }: { car: Car; onCall: () => void }) {
-  const cover = car.photoUrls?.[0];
+function priceCol(label: string, price: string | null, old: string | null, fromLabel: string) {
   return (
-    <div className="card car-card" style={{ overflow: "hidden" }} data-testid="car-card">
-      <div style={{ position: "relative" }}>
-        {cover ? (
-          <div style={{ position: "relative", aspectRatio: "16 / 10" }}>
-            <Image src={cover} alt={`Ảnh xe ${car.name}`} fill sizes="448px" style={{ objectFit: "cover" }} />
-          </div>
+    <div style={{ flex: 1, padding: "13px 0" }}>
+      <div className="muted" style={{ fontSize: 12.5, fontWeight: 500 }}>{label}</div>
+      <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.03em", marginTop: 3 }}>
+        {price ? (
+          <>
+            {fromLabel}
+            {price}
+            <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}> đ/ngày</span>
+          </>
         ) : (
-          <Photo label={`Ảnh xe · ${car.name}`} ratio="16 / 10" radius={0} />
-        )}
-        {car.badge && (
-          <span
-            style={{
-              position: "absolute", top: 12, left: 12, fontSize: 11.5, fontWeight: 600,
-              padding: "6px 11px", borderRadius: 99, background: "rgba(11,11,12,.88)",
-              color: "#fff", backdropFilter: "blur(4px)",
-            }}
-          >
-            {car.badge}
-          </span>
+          <span className="muted" style={{ fontSize: 15, fontWeight: 600 }}>Liên hệ</span>
         )}
       </div>
+      {price && old && <div className="was">{old} đ</div>}
+    </div>
+  );
+}
+
+/** Thẻ "loại xe theo số chỗ": giá tài xế/tự lái + danh sách xe thật trong loại. */
+function SeatGroupCard({ group, onCall }: { group: SeatGroup; onCall: () => void }) {
+  const fromLabel = group.multiple ? "từ " : "";
+  return (
+    <div className="card car-card" style={{ overflow: "hidden" }} data-testid="seat-card">
       <div style={{ padding: 18 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-          <h3 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.035em" }}>{car.name}</h3>
-          {car.promo && <span className="promo-chip">{car.promo}</span>}
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+          <h3 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.04em", display: "flex", alignItems: "center", gap: 8 }}>
+            <Users size={22} /> {group.label}
+          </h3>
+          {group.promo && <span className="promo-chip">{group.promo}</span>}
         </div>
-        <div className="muted linkrow" style={{ fontSize: 14.5, marginTop: 6 }}>
-          <span className="linkrow" style={{ gap: 6 }}>
-            <Users size={16} /> {car.seats} chỗ
-          </span>
-          <span style={{ color: "var(--hairline)" }}>·</span>
-          <span>{car.type.split("·")[0].trim()}</span>
-        </div>
-        <div style={{ display: "flex", marginTop: 16, borderTop: "1px solid var(--hairline)", borderBottom: "1px solid var(--hairline)" }}>
-          <div style={{ flex: 1, padding: "13px 0" }}>
-            <div className="muted" style={{ fontSize: 12.5, fontWeight: 500 }}>Có tài xế</div>
-            <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.03em", marginTop: 3 }}>
-              {car.priceDriver}
-              <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}> đ/ngày</span>
-            </div>
-            {car.oldPriceDriver && <div className="was">{car.oldPriceDriver} đ</div>}
-          </div>
+
+        <div style={{ display: "flex", marginTop: 14, borderTop: "1px solid var(--hairline)", borderBottom: "1px solid var(--hairline)" }}>
+          {priceCol("Có tài xế", group.priceDriver, group.oldPriceDriver, fromLabel)}
           <div style={{ width: 1, background: "var(--hairline)" }} />
-          <div style={{ flex: 1, padding: "13px 0 13px 16px" }}>
-            <div className="muted" style={{ fontSize: 12.5, fontWeight: 500 }}>Tự lái</div>
-            <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.03em", marginTop: 3 }}>
-              {car.priceSelf ? (
-                <>
-                  {car.priceSelf}
-                  <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}> đ/ngày</span>
-                </>
-              ) : (
-                <span className="muted" style={{ fontSize: 15, fontWeight: 600 }}>Liên hệ</span>
-              )}
-            </div>
-            {car.priceSelf && car.oldPriceSelf && <div className="was">{car.oldPriceSelf} đ</div>}
+          <div style={{ paddingLeft: 16, flex: 1 }}>
+            {priceCol("Tự lái", group.priceSelf, group.oldPriceSelf, fromLabel)}
           </div>
         </div>
-        <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-          <Link href={`/xe/${car.slug}`} className="btn btn-ghost btn-sm" style={{ flex: 1 }} data-testid="car-detail-link">
-            Xem chi tiết <ArrowRight size={17} />
-          </Link>
-          <button className="btn btn-primary btn-sm" style={{ width: 52, padding: 0, flexShrink: 0 }} onClick={onCall} aria-label="Gọi ngay">
-            <Phone size={18} />
-          </button>
+
+        <div className="muted" style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: ".04em", textTransform: "uppercase", marginTop: 16, marginBottom: 8 }}>
+          Xe loại này
         </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {group.cars.map((car) => {
+            const cover = car.photoUrls?.[0];
+            return (
+              <Link
+                key={car.slug}
+                href={`/xe/${car.slug}`}
+                data-testid="car-detail-link"
+                style={{ display: "flex", alignItems: "center", gap: 12, padding: 8, borderRadius: 12, border: "1px solid var(--hairline)" }}
+              >
+                <div style={{ position: "relative", width: 64, aspectRatio: "16 / 10", borderRadius: 8, overflow: "hidden", flexShrink: 0 }}>
+                  {cover ? (
+                    <Image src={cover} alt={car.name} fill sizes="64px" style={{ objectFit: "cover" }} />
+                  ) : (
+                    <Photo label="" ratio="16 / 10" radius={8} />
+                  )}
+                </div>
+                <span style={{ flex: 1, fontWeight: 700, fontSize: 15.5 }}>{car.name}</span>
+                {car.badge && <span className="muted" style={{ fontSize: 12 }}>{car.badge}</span>}
+                <ArrowRight size={17} className="muted" />
+              </Link>
+            );
+          })}
+        </div>
+
+        <button className="btn btn-primary btn-sm" style={{ marginTop: 14, width: "100%" }} onClick={onCall}>
+          <Phone size={17} /> Gọi tư vấn loại {group.label}
+        </button>
       </div>
     </div>
   );
@@ -133,6 +137,7 @@ export default function JourneyHome({
   testimonials: Testimonial[];
 }) {
   const { call, zalo, service, quote } = useContactActions();
+  const groups: SeatGroup[] = groupCarsBySeats(cars);
 
   const mapEmbed = `https://www.openstreetmap.org/export/embed.html?bbox=${BRAND.lng - 0.01},${BRAND.lat - 0.01},${BRAND.lng + 0.01},${BRAND.lat + 0.01}&layer=mapnik&marker=${BRAND.lat},${BRAND.lng}`;
 
@@ -214,27 +219,30 @@ export default function JourneyHome({
           </div>
         </Chapter>
 
-        {/* 02 — Đội xe */}
-        <Chapter n="02" tag="Đội xe" label="Xe của chúng tôi">
+        {/* 02 — Thuê theo số chỗ */}
+        <Chapter n="02" tag="Đội xe" label="Thuê theo số chỗ">
           <div className="stack-hint">
-            <Box size={15} /> Cuộn để lật qua {cars.length} xe
+            <Box size={15} /> Cuộn để xem {groups.length} loại xe
           </div>
           <div className="car-stack">
-            {cars.map((car, i) => (
+            {groups.map((g, i) => (
               <div
                 className="car-stack-item"
-                key={car.slug}
-                style={{ top: 78 + i * 12, zIndex: i + 1, marginBottom: i === cars.length - 1 ? 0 : 22, paddingBottom: 22 }}
+                key={g.seats}
+                style={{ top: 78 + i * 12, zIndex: i + 1, marginBottom: i === groups.length - 1 ? 0 : 22, paddingBottom: 22 }}
               >
-                <CarCard car={car} onCall={call} />
+                <SeatGroupCard group={g} onCall={call} />
               </div>
             ))}
           </div>
+          <p className="muted" style={{ fontSize: 13, lineHeight: 1.55, marginTop: 16 }}>
+            Đi xa / qua đêm: báo giá khi gọi · Xe cưới có thể thêm phụ phí trang trí.
+          </p>
         </Chapter>
 
         {/* 03 — Báo giá nhanh */}
         <Chapter n="03" tag="Báo giá" label="Tính nhanh chi phí">
-          <QuickQuote cars={cars} onQuote={quote} />
+          <QuickQuote groups={groups} onQuote={quote} />
         </Chapter>
 
         {/* 04 — Lựa chọn */}

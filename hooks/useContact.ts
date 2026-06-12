@@ -3,10 +3,9 @@
 import { useState } from "react";
 import type { Service } from "@/config/services";
 
-/** Tóm tắt yêu cầu báo giá từ QuickQuote (chương 03). */
+/** Tóm tắt yêu cầu báo giá từ QuickQuote (chương 03) — theo SỐ CHỖ. */
 export type QuoteRequest = {
-  carSlug: string;
-  carName: string;
+  label: string; // "7 chỗ"
   mode: "driver" | "self";
   days: number;
   far: boolean;
