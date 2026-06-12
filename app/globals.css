@@ -1,49 +1,415 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design tokens (CSS vars) — dùng cho các class component bên dưới.
+   Màu tương ứng với tailwind.config.ts (ink/surface/bg/muted/...).
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --ink: #0b0b0c;
+  --surface: #ffffff;
+  --bg: #fafafa;
+  --muted: #6b7280;
+  --hairline: #e7e7e9;
+  --stage: #0b0b0c;
+  --stage-ink: #fafafa;
+  --stage-muted: #9a9ca3;
+  --stage-hairline: #1f2024;
+  --accent: #2d5bff;
+  --r-card: 14px;
+  --r-btn: 13px;
 }
 
 * {
-  box-sizing: border-box;
-  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+html,
+body {
   margin: 0;
+  padding: 0;
+}
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* App là một cột mobile-first căn giữa (~412px) trên mọi màn hình */
+.app-shell {
+  width: 100%;
+  max-width: 412px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ===== Layout primitives ===== */
+.container {
+  padding-left: 22px;
+  padding-right: 22px;
+}
+.section {
+  padding-top: 52px;
+}
+.eyebrow {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.eyebrow.on-dark {
+  color: var(--stage-muted);
+}
+.hairline {
+  height: 1px;
+  background: var(--hairline);
+  border: none;
+  margin: 0;
+}
+.muted {
+  color: var(--muted);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+.display {
+  font-size: 46px;
+  line-height: 0.98;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+.h2 {
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+}
+.lead {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--muted);
+  font-weight: 400;
+}
+.body {
+  font-size: 17px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: var(--r-btn);
+  font-family: inherit;
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  width: 100%;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
+}
+.btn:active {
+  transform: scale(0.975);
+}
+.btn-primary {
+  background: var(--ink);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #26262a;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--hairline);
+}
+.btn-ghost:hover {
+  border-color: var(--ink);
+}
+.btn-on-dark {
+  background: var(--stage-ink);
+  color: var(--ink);
+}
+.btn-ghost-on-dark {
+  background: transparent;
+  color: var(--stage-ink);
+  border-color: var(--stage-hairline);
+}
+.btn-ghost-on-dark:hover {
+  border-color: var(--stage-ink);
+}
+.btn-sm {
+  min-height: 44px;
+  font-size: 15px;
+  padding: 0 16px;
+  width: auto;
+}
+
+/* ===== Cards ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-card);
+}
+
+/* ===== Image placeholder (thay bằng ảnh thật sau) ===== */
+.imgph {
+  position: relative;
+  overflow: hidden;
+  background: #f1f1f3;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(11, 11, 12, 0.045) 0 1px,
+    transparent 1px 11px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.imgph.dark {
+  background: #141416;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0 1px,
+    transparent 1px 11px
+  );
+}
+.imgph .lbl {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--hairline);
+  backdrop-filter: blur(2px);
+}
+.imgph.dark .lbl {
+  color: var(--stage-muted);
+  background: rgba(11, 11, 12, 0.5);
+  border-color: var(--stage-hairline);
+}
+
+/* ===== Reveal-on-scroll (hook gắn .in) ===== */
+.reveal {
+  opacity: 0;
+  transform: var(--rv-hidden, translateY(16px));
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== Marquee (testimonials) ===== */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 7%,
+    #000 93%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 7%,
+    #000 93%,
+    transparent 100%
+  );
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 52s linear infinite;
+}
+.marquee:hover .marquee-track,
+.marquee:active .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.tcard {
+  flex: 0 0 300px;
+  margin-right: 14px;
+}
+
+/* ===== Ambient motion (subtle, GPU-only) ===== */
+.hero-photo {
+  animation: heroZoom 16s ease-in-out infinite alternate;
+}
+@keyframes heroZoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+.dot-pulse {
+  position: relative;
+}
+.dot-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 99px;
+  border: 1px solid var(--accent);
+  opacity: 0.5;
+  animation: dotPulse 2.6s ease-out infinite;
+}
+@keyframes dotPulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.6;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+@keyframes barUp {
+  from {
+    transform: translateY(120%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes sheetUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+.car-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease;
+}
+.car-card:hover {
+  transform: translateY(-3px);
+  border-color: #d9d9dd;
+}
+
+/* ===== Screen transition ===== */
+.screen {
+  animation: screenIn 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes screenIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===== model-viewer ===== */
+model-viewer {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  background: transparent;
+}
+.mv-stage {
+  background: radial-gradient(120% 90% at 50% 18%, #1b1c20 0%, #0b0b0c 62%);
+}
+
+/* spinner + gesture hint */
+.spin {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.fade-hint {
+  animation: hintFade 5.5s ease forwards;
+}
+@keyframes hintFade {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 a {
   color: inherit;
   text-decoration: none;
 }
+.linkrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* ===== Tôn trọng người tắt hiệu ứng hệ thống ===== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 0 22px;
+  }
+  .hero-photo,
+  .dot-pulse::after,
+  .car-card,
+  .screen {
+    animation: none !important;
   }
 }

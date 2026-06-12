@@ -1,0 +1,95 @@
+{
+  "actions": {
+    "callNow": "Gọi ngay",
+    "messageZalo": "Nhắn Zalo",
+    "openZalo": "Mở Zalo",
+    "viewDetail": "Xem chi tiết",
+    "directions": "Chỉ đường tới nhà xe",
+    "back": "Quay lại",
+    "close": "Đóng",
+    "seats": "{count} chỗ",
+    "perDay": "đ/ngày",
+    "contact": "Liên hệ"
+  },
+  "hero": {
+    "line1": "Đi xa thật dễ.",
+    "line2": "Chỉ một",
+    "line3": "cuộc gọi.",
+    "lead": "Cho thuê xe có tài xế hoặc tự lái — đi khám bệnh, đám cưới, du lịch hay việc gấp. Sạch sẽ, đúng giờ, đáng tin.",
+    "photoLabel": "Ảnh xe full-bleed · 16:10"
+  },
+  "services": {
+    "eyebrow": "Dịch vụ",
+    "title": "Bạn cần đi đâu?",
+    "hospital": { "label": "Đi khám bệnh", "sub": "Đưa đón bệnh viện, đúng giờ" },
+    "wedding": { "label": "Đám cưới · Rước dâu", "sub": "Xe sạch đẹp, tài xế lịch sự" },
+    "travel": { "label": "Đi du lịch", "sub": "Theo ngày, theo tuyến" },
+    "urgent": { "label": "Đi xa · Việc gấp", "sub": "Sẵn sàng 24/7" }
+  },
+  "cars": {
+    "eyebrow": "Đội xe",
+    "title": "Xe của chúng tôi",
+    "count": "{count} xe",
+    "priceDriver": "Có tài xế",
+    "priceSelf": "Tự lái",
+    "photoLabel": "Ảnh xe · {name}"
+  },
+  "drive": {
+    "eyebrow": "Lựa chọn",
+    "title": "Tự lái hay có tài xế?",
+    "driverTitle": "Có tài xế",
+    "driverBody": "Bác tài quen đường, đón tận nơi. Bạn chỉ việc lên xe — phù hợp người lớn tuổi, đi khám bệnh, sự kiện.",
+    "selfTitle": "Tự lái",
+    "selfBody": "Tự cầm lái, chủ động giờ giấc. Thủ tục gọn nhẹ, xe giao tận nhà — phù hợp đi gần và du lịch ngắn ngày."
+  },
+  "testimonials": {
+    "eyebrow": "Khách nói gì",
+    "title": "Bà con tin tưởng"
+  },
+  "partner": {
+    "eyebrow": "Đối tác",
+    "title": "Bạn có xe muốn cho thuê?",
+    "body": "Để xe nhàn rỗi sinh lời. Chúng tôi lo khách, lịch và hợp đồng — bạn nhận thu nhập hàng tháng.",
+    "cta": "Trở thành đối tác",
+    "formIntro": "Để lại thông tin, nhà xe sẽ gọi lại trao đổi với bạn.",
+    "formName": "Tên của bạn",
+    "formPhone": "Số điện thoại",
+    "formCarInfo": "Loại xe của bạn",
+    "formNote": "Ghi chú thêm",
+    "submit": "Gửi thông tin",
+    "submitting": "Đang gửi…",
+    "success": "Đã nhận thông tin. Nhà xe sẽ gọi lại cho bạn sớm.",
+    "error": "Có lỗi khi gửi. Bà con vui lòng gọi trực tiếp giúp nhé."
+  },
+  "location": {
+    "eyebrow": "Vị trí",
+    "title": "Ghé nhà xe",
+    "loading": "Đang tải bản đồ…"
+  },
+  "footer": {
+    "rights": "© 2026 {name}"
+  },
+  "detail": {
+    "model3d": "Mô hình 3D",
+    "gestureHint": "Vuốt để xoay · chụm để zoom",
+    "ar": "Xem trong sân nhà bạn",
+    "loading3d": "Đang tải mô hình 3D…",
+    "poster": "Poster ảnh xe · {name}",
+    "galleryEyebrow": "Ảnh thật của xe",
+    "galleryPrev": "Trước",
+    "galleryNext": "Sau",
+    "photoLabel": "Ảnh {index}/{count}",
+    "descriptionEyebrow": "Mô tả",
+    "priceEyebrow": "Bảng giá",
+    "driverNote": "Đã gồm tài xế · đi về trong ngày",
+    "selfNote": "Đặt cọc theo quy định · giao xe tận nhà",
+    "selfNoteNone": "Hiện chưa áp dụng cho dòng xe này",
+    "priceFootnote": "* Giá tham khảo. Đi xa, qua đêm hoặc ngày lễ có thể phụ phí — vui lòng gọi để báo giá chính xác.",
+    "ownerLabel": "Chủ xe",
+    "trust": "Uy tín"
+  },
+  "contactSheet": {
+    "callTitle": "Gọi cho nhà xe",
+    "zaloTitle": "Nhắn Zalo cho nhà xe"
+  }
+}

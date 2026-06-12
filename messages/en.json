@@ -1,0 +1,95 @@
+{
+  "actions": {
+    "callNow": "Call now",
+    "messageZalo": "Zalo",
+    "openZalo": "Open Zalo",
+    "viewDetail": "View details",
+    "directions": "Directions to garage",
+    "back": "Back",
+    "close": "Close",
+    "seats": "{count} seats",
+    "perDay": "đ/day",
+    "contact": "Contact"
+  },
+  "hero": {
+    "line1": "Travel far,",
+    "line2": "just one",
+    "line3": "phone call.",
+    "lead": "Car rental with driver or self-drive — hospital trips, weddings, travel or urgent needs. Clean, on time, trustworthy.",
+    "photoLabel": "Full-bleed car photo · 16:10"
+  },
+  "services": {
+    "eyebrow": "Services",
+    "title": "Where do you need to go?",
+    "hospital": { "label": "Hospital trips", "sub": "Pickup & drop-off, on time" },
+    "wedding": { "label": "Weddings", "sub": "Clean cars, courteous drivers" },
+    "travel": { "label": "Travel", "sub": "By day, by route" },
+    "urgent": { "label": "Long & urgent trips", "sub": "Available 24/7" }
+  },
+  "cars": {
+    "eyebrow": "Fleet",
+    "title": "Our cars",
+    "count": "{count} cars",
+    "priceDriver": "With driver",
+    "priceSelf": "Self-drive",
+    "photoLabel": "Car photo · {name}"
+  },
+  "drive": {
+    "eyebrow": "Options",
+    "title": "Self-drive or with driver?",
+    "driverTitle": "With driver",
+    "driverBody": "An experienced driver picks you up. Just hop in — ideal for the elderly, hospital trips and events.",
+    "selfTitle": "Self-drive",
+    "selfBody": "Drive yourself, on your own schedule. Quick paperwork, car delivered to your door — good for short local trips."
+  },
+  "testimonials": {
+    "eyebrow": "Testimonials",
+    "title": "Trusted by locals"
+  },
+  "partner": {
+    "eyebrow": "Partner",
+    "title": "Have a car to rent out?",
+    "body": "Turn your idle car into income. We handle customers, scheduling and contracts — you earn monthly.",
+    "cta": "Become a partner",
+    "formIntro": "Leave your details and the garage will call you back.",
+    "formName": "Your name",
+    "formPhone": "Phone number",
+    "formCarInfo": "Your car type",
+    "formNote": "Additional note",
+    "submit": "Send",
+    "submitting": "Sending…",
+    "success": "Received. The garage will call you back soon.",
+    "error": "Something went wrong. Please call us directly."
+  },
+  "location": {
+    "eyebrow": "Location",
+    "title": "Visit the garage",
+    "loading": "Loading map…"
+  },
+  "footer": {
+    "rights": "© 2026 {name}"
+  },
+  "detail": {
+    "model3d": "3D model",
+    "gestureHint": "Swipe to rotate · pinch to zoom",
+    "ar": "View in your yard",
+    "loading3d": "Loading 3D model…",
+    "poster": "Car poster · {name}",
+    "galleryEyebrow": "Real car photos",
+    "galleryPrev": "Previous",
+    "galleryNext": "Next",
+    "photoLabel": "Photo {index}/{count}",
+    "descriptionEyebrow": "Description",
+    "priceEyebrow": "Pricing",
+    "driverNote": "Driver included · same-day round trip",
+    "selfNote": "Deposit required · car delivered to your door",
+    "selfNoteNone": "Not available for this car",
+    "priceFootnote": "* Reference prices. Long trips, overnight or holidays may incur surcharges — please call for an exact quote.",
+    "ownerLabel": "Owner",
+    "trust": "Trusted"
+  },
+  "contactSheet": {
+    "callTitle": "Call the garage",
+    "zaloTitle": "Message the garage on Zalo"
+  }
+}
