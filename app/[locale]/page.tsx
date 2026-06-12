@@ -1,15 +1,8 @@
 import { setRequestLocale } from "next-intl/server";
-import Hero from "@/components/Hero";
-import ServiceTypes from "@/components/ServiceTypes";
-import CarList from "@/components/CarList";
-import DriveOptions from "@/components/DriveOptions";
-import Testimonials from "@/components/Testimonials";
-import PartnerSection from "@/components/PartnerSection";
-import LocationSection from "@/components/LocationSection";
-import Footer from "@/components/Footer";
+import { getCars, getTestimonials } from "@/lib/data";
+import JourneyHome from "@/components/JourneyHome";
 
-// Đọc Supabase phía server lúc RUNTIME (không nướng cứng lúc build) →
-// sửa dữ liệu trong Supabase là web đổi ngay, không cần deploy lại.
+// Đọc Supabase phía server lúc RUNTIME → sửa dữ liệu là web đổi ngay, không deploy lại.
 export const dynamic = "force-dynamic";
 
 export default async function HomePage({
@@ -20,16 +13,7 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return (
-    <main className="screen">
-      <Hero />
-      <ServiceTypes />
-      <CarList />
-      <DriveOptions />
-      <Testimonials />
-      <PartnerSection />
-      <LocationSection />
-      <Footer />
-    </main>
-  );
+  const [cars, testimonials] = await Promise.all([getCars(), getTestimonials()]);
+
+  return <JourneyHome cars={cars} testimonials={testimonials} />;
 }

@@ -149,13 +149,18 @@ function galleryBtn(disabled) {
 
 function PriceTable({ car }) {
   const rows = [
-    { label: "Có tài xế", price: car.driver, note: "Đã gồm tài xế · đi về trong ngày" },
-    { label: "Tự lái", price: car.self, note: car.self ? "Đặt cọc theo quy định · giao xe tận nhà" : "Hiện chưa áp dụng cho dòng xe này" },
+    { label: "Có tài xế", price: car.driver, was: car.oldDriver, note: "Đã gồm tài xế · đi về trong ngày" },
+    { label: "Tự lái", price: car.self, was: car.oldSelf, note: car.self ? "Đặt cọc theo quy định · giao xe tận nhà" : "Hiện chưa áp dụng cho dòng xe này" },
   ];
   return (
     <section className="section">
       <div className="container">
-        <Eyebrow>Bảng giá</Eyebrow>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <Eyebrow>Bảng giá</Eyebrow>
+          {car.promo && (
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".02em", padding: "5px 10px", borderRadius: 99, border: "1px solid var(--ink)", color: "var(--ink)", whiteSpace: "nowrap" }}>{car.promo}</span>
+          )}
+        </div>
         <div style={{ marginTop: 18, border: "1px solid var(--hairline)", borderRadius: 16, overflow: "hidden" }}>
           {rows.map((r, i) => (
             <div key={i} style={{
@@ -163,9 +168,14 @@ function PriceTable({ car }) {
             }}>
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
                 <span style={{ fontSize: 16.5, fontWeight: 600 }}>{r.label}</span>
-                <span style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.04em" }}>
-                  {r.price ? <>{r.price}<span className="muted" style={{ fontSize: 14, fontWeight: 500 }}> đ/ngày</span></>
-                    : <span className="muted" style={{ fontSize: 16, fontWeight: 600 }}>Liên hệ</span>}
+                <span style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                  {r.price && r.was && (
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "var(--muted)", textDecoration: "line-through" }}>{r.was}</span>
+                  )}
+                  <span style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.04em" }}>
+                    {r.price ? <>{r.price}<span className="muted" style={{ fontSize: 14, fontWeight: 500 }}> đ/ngày</span></>
+                      : <span className="muted" style={{ fontSize: 16, fontWeight: 600 }}>Liên hệ</span>}
+                  </span>
                 </span>
               </div>
               <div className="muted" style={{ fontSize: 13.5, marginTop: 7 }}>{r.note}</div>

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Be_Vietnam_Pro, JetBrains_Mono } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { BRAND } from "@/config/brand";
+import { getCars } from "@/lib/data";
 import ContactProvider from "@/components/ContactProvider";
 import JsonLd from "@/components/JsonLd";
 import { localBusinessJsonLd } from "@/lib/seo";
@@ -83,13 +84,15 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  const cars = await getCars();
+
   return (
     <html lang={locale} className={`${sans.variable} ${mono.variable}`}>
       <body>
         <JsonLd data={localBusinessJsonLd()} />
         <NextIntlClientProvider>
-          <div className="app-shell">
-            <ContactProvider>{children}</ContactProvider>
+          <div className="page">
+            <ContactProvider cars={cars}>{children}</ContactProvider>
           </div>
         </NextIntlClientProvider>
       </body>

@@ -29,7 +29,7 @@ const config: Config = {
         },
       },
       borderRadius: { card: "14px", btn: "13px", sheet: "22px" },
-      maxWidth: { mobile: "412px" },
+      maxWidth: { mobile: "448px" },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],

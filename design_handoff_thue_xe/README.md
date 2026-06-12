@@ -1,161 +1,179 @@
-# Handoff: Thuê Xe Trung Hiếu — Web cho thuê xe (mobile)
+# Handoff: Thuê Xe Trung Hiếu — Web cho thuê xe (mobile) · **bản V2 "Một hành trình"**
 
 ## Tổng quan
 Landing page giới thiệu dịch vụ cho thuê xe (có tài xế / tự lái) phục vụ đi khám bệnh,
-đám cưới – rước dâu, du lịch, đi xa. Mục tiêu: khách **xem xe → bấm GỌI hoặc NHẮN ZALO**.
-Mobile-first, tiếng Việt, phong cách **quiet-luxury đơn sắc** (như trang một hãng xe điện
-hiện đại), KHÔNG màu mè / emoji / cảm giác "tờ rơi".
+đám cưới – rước dâu, du lịch, đi xa. Mục tiêu: khách **xem xe → bấm GỌI / NHẮN ZALO / GỬI YÊU CẦU BÁO GIÁ**.
+Mobile-first, tiếng Việt, phong cách **quiet-luxury đơn sắc**, KHÔNG màu mè / emoji / "tờ rơi".
 
-## Về các file trong gói này
-Các file trong `reference/` là **bản thiết kế tham chiếu viết bằng HTML/React (Babel inline)** —
-prototype thể hiện đúng look & behavior, **KHÔNG phải code production để copy nguyên**.
-Nhiệm vụ là **dựng lại các màn hình này trong codebase đích** (đề xuất **Next.js + Tailwind**,
-như brief) theo pattern/thư viện của dự án. Hãy bám pixel/spacing/màu/typography trong file
-tham chiếu, nhưng viết lại bằng component sạch của framework.
+## ⭐ Ý tưởng chủ đạo của V2 — "MỘT HÀNH TRÌNH"
+Cú cuộn trang được kể như **một chuyến đi**. Nhưng **trọng tâm là NỘI DUNG, không phải chiếc xe**:
+- Một **"mạch hành trình" rất mảnh ở mép trái** (thanh dọc + chiếc xe tí hon) — **chỉ báo tiến trình**,
+  cố tình tiết chế, **không cắt vào nội dung** (nội dung rộng gần full-width, lề trái chỉ ~46px).
+- **Đèn xe đổi theo hướng cuộn**: cuộn xuống (tiến) → **đèn pha trắng sáng**; cuộn lên (lùi) →
+  **đèn hậu đỏ nhấp nháy**; dừng → **đèn phanh đỏ sáng đều**.
+- Trang chia **8 "chương" đánh số editorial (01 → 08)**. Mỗi chương khi cuộn tới (≈ xe tới nơi)
+  **tự bung ra có biên đạo**: số chương hiện → vạch kẻ chạy ngang → nhãn → tiêu đề trồi lên → nội dung so le.
 
-## Độ chính xác (Fidelity)
-**Hi-fi** — màu, typography, spacing, bo góc, tương tác đã chốt. Dựng lại **pixel-perfect**.
+> Đây là lựa chọn có chủ đích sau nhiều vòng: thứ chạy theo scroll phải **ngoại biên & mờ**;
+> nội dung mới là thứ được biên đạo để thu hút (giống Apple/Stripe/Linear).
+
+## Về các file trong gói
+`reference/` là **bản thiết kế tham chiếu HTML/React (Babel inline)** — đúng look & behavior,
+**KHÔNG phải code production**. `reference/index.html` là **nguồn chân lý về CSS** (toàn bộ class
+`.spine`, `.chapter`, `.est-card`, `.hero-show`, `.car .light`… nằm trong `<style>` ở đây) — **port
+nguyên khối CSS này** sang `app/globals.css`. `snippets/` là **scaffold TypeScript** đã gõ sẵn type,
+**tiêu thụ chính các class CSS đó** (không phải tất cả bằng utility Tailwind).
+
+## Độ chính xác
+**Hi-fi** — dựng lại **pixel-perfect**. Bám pixel/spacing/màu/typography/animation trong reference.
 
 ---
 
 ## Stack đề xuất
 - **Next.js (App Router) + TypeScript + Tailwind CSS**.
-- Icon: **lucide-react** (đúng bộ icon đã dùng).
-- Font: **Be Vietnam Pro** qua `next/font/google` (weights 400/500/600/700/800).
-- 3D: **`@google/model-viewer`** (web component) — load client-side, `loading="eager"`.
-- Tách component: `Hero, ServiceTypes, CarCard, CarList, DriveOptions, Testimonials,
-  PartnerSection, Footer, StickyContactBar, Car3DViewer, CarGallery, PriceTable,
-  OwnerCard, ContactSheet`.
+- Icon: **lucide-react** (map theo `reference/app/icons.jsx`).
+- Font: **Be Vietnam Pro** + **JetBrains Mono** qua `next/font/google` (Be VN: 400–800).
+- 3D: **`@google/model-viewer`** — client-only, `loading="eager"`.
+- **Plain CSS classes** cho phần "hành trình"/estimator (port từ reference) + Tailwind cho layout thường.
 
-## Design tokens (map vào `tailwind.config` / CSS vars)
+## Design tokens (đã có sẵn trong `snippets/tailwind.config.ts` + `snippets/config/brand.ts`)
 | Token | Hex | Dùng cho |
 |---|---|---|
 | `ink` | `#0B0B0C` | chữ chính, nút chính |
 | `surface` | `#FFFFFF` | nền thẻ |
 | `bg` | `#FAFAFA` | nền sáng chính |
-| `muted` | `#6B7280` | chữ phụ / chú thích |
-| `hairline` | `#E7E7E9` | viền mảnh, separator |
+| `muted` | `#6B7280` | chữ phụ |
+| `hairline` | `#E7E7E9` | viền mảnh |
 | `stage` (dark) | `#0B0B0C` | nền hero / khu 3D / footer |
 | `stage-ink` | `#FAFAFA` | chữ trên nền tối |
 | `stage-muted` | `#9A9CA3` | chữ phụ trên nền tối |
 | `stage-hairline` | `#1F2024` | viền trên nền tối |
-| `accent` (cobalt) | `#2D5BFF` | **DÙNG RẤT ÍT**: chấm chỉ báo, sao đánh giá, badge "Uy tín", focus/link |
+| `accent` (cobalt) | `#2D5BFF` | **DÙNG RẤT ÍT**: chấm chỉ báo, sao, nốt/vạch ray, switch bật, focus |
 
-- **Bo góc:** thẻ `14px`, nút `13px`, sheet `22px`.
-- **Bóng:** gần như không — ưu tiên viền hairline. Bóng chỉ rất nhẹ cho khung điện thoại / sheet.
-- **Container mobile:** rộng tối đa ~412px, padding ngang `22px`, nhịp dọc giữa khối `~52px`.
-- **Vùng chạm:** ≥ 48px; CTA chính cao `52px`.
+- Bo góc: thẻ `14px`, nút `13px`, sheet `22px`. Bóng: gần như không — ưu tiên hairline.
+- Container mobile: cột `.page` rộng tối đa **448px**, padding ngang `22px`, nhịp dọc `~52–64px`.
+- Vùng chạm ≥ 48px; CTA chính cao `52px`.
+
+## ⚠️ Kỹ thuật QUAN TRỌNG NHẤT của V2
+**Hiệu ứng hành trình chạy theo scroll của container `.page`, KHÔNG phải `window`.**
+`.page` là cột giới hạn bề ngang, đặt `height:100dvh; overflow-y:auto`. Lý do: nhiều môi trường nhúng
+(và preview) vô hiệu hoá window-scroll. → `JourneyRail` lắng nghe `scroller.addEventListener('scroll')`
+với `scroller = document.querySelector('.page')`; `Chapter` dùng IntersectionObserver `root = .page`.
+Ở Next.js, giữ nguyên mô hình: 1 cột `.page` cuộn nội bộ (đừng để body/window cuộn).
 
 ## Typography
-- Họ chữ duy nhất: **Be Vietnam Pro** (grotesk, hỗ trợ tiếng Việt đủ).
-- Display (hero h1): `46px / weight 800 / line-height .98 / letter-spacing -0.045em`.
-- H2 section: `27px / 800 / -0.035em`.
-- Tên xe (card): `22px / 800 / -0.035em`; (detail) `30px / 800 / -0.04em`.
-- Body/lead: `17px / 400 / line-height 1.5–1.6`.
-- Eyebrow: `11.5px / 600 / UPPERCASE / letter-spacing .16em / màu muted / nowrap`.
-- Giá tiền: nổi bật bằng **cỡ chữ** (19–24px, 800), KHÔNG bằng màu.
-- Caption placeholder ảnh: monospace (JetBrains Mono) `11px`.
+- Be Vietnam Pro (grotesk). Display/hero h1: `48px / 800 / line-height .96 / letter-spacing -0.05em`.
+- H2 chương: `27px / 800 / -0.035em`. Tên xe card `22px/800`; detail `30px/800`.
+- Body/lead `17px / 400 / 1.5–1.6`. Eyebrow/nhãn chương `11.5px/600/UPPERCASE/.16em/muted/nowrap`.
+- Số chương: JetBrains Mono `13px/600`. Giá: nổi bật bằng **cỡ chữ** (19–32px/800), KHÔNG bằng màu.
 
 ---
 
-## MÀN HÌNH 1 — TRANG CHỦ
-1. **Hero** (nền `stage` tối). Eyebrow chấm cobalt + "DỊCH VỤ CHO THUÊ XE" → h1 grotesk lớn
-   "Đi xa thật dễ. Chỉ một cuộc gọi." → 1 câu phụ (muted) → ảnh xe full-bleed (16:10) →
-   cặp CTA: **Gọi ngay** (nền `stage-ink` trắng, chữ ink, icon Phone) / **Nhắn Zalo** (ghost viền).
-2. **ServiceTypes** — list 4 mục, mỗi mục: ô icon 46px viền hairline + nhãn + sub + chevron phải.
-   Phân tách bằng hairline. (Đi khám bệnh · Đám cưới–Rước dâu · Đi du lịch · Đi xa/việc gấp).
-3. **CarList** — header "Xe của chúng tôi" + đếm "N xe" (mono, nowrap). Mỗi **CarCard**:
-   ảnh xe 16:10 (+ badge "Phổ biến nhất"/"Xe cưới" góc trên trái nếu có), tên xe (800),
-   dòng `Users` + số chỗ + loại; **bảng giá 2 cột** (Có tài xế / Tự lái) phân tách hairline,
-   số 19px/800; hàng nút: "Xem chi tiết" (ghost + mũi tên, flex:1) + nút gọi nhanh vuông 52px (ink).
-4. **DriveOptions** — "Tự lái hay có tài xế?" 2 mục (icon steering / key) phân tách hairline.
-5. **Testimonials (marquee)** — header eyebrow "Khách nói gì" + h2 "Bà con tin tưởng".
-   Dải thẻ đánh giá **trôi ngang liên tục, liền mạch** (CSS marquee): mỗi thẻ `flex:0 0 300px`
-   + `margin-right:14px`; track chứa **2 bản** danh sách thẻ, `animation: translateX(0) → -50%`,
-   `linear infinite ~52s`. **Mờ dần 2 mép** bằng `mask-image: linear-gradient(...)`. **Chạm/hover →
-   `animation-play-state: paused`**. `prefers-reduced-motion` → tắt animation, cho thẻ wrap xuống dòng.
-   Mỗi thẻ: sao (icon line cobalt) + câu "…" + "— Tên, địa phương".
-6. **PartnerSection** — thẻ viền: "Bạn có xe muốn cho thuê?" + nút ghost "Trở thành đối tác ↗".
-7. **LocationSection** — eyebrow "Vị trí" + h2 "Ghé nhà xe" + địa chỉ + **bản đồ nhúng**.
-   ⚠️ **Google `output=embed` bị chặn iframe** (`X-Frame-Options` → `ERR_BLOCKED_BY_RESPONSE`) — KHÔNG dùng.
-   Đang dùng **OpenStreetMap** (keyless, không bị chặn): `https://www.openstreetmap.org/export/embed.html?bbox=<minlon,minlat,maxlon,maxlat>&layer=mapnik&marker=<lat,lng>`,
-   `filter: grayscale(.15)` cho hợp tone, có placeholder "Đang tải bản đồ…".
-   Toạ độ ghim: **`10.534045, 105.16464`** (`BRAND.lat/lng`). Nút "Chỉ đường" → `BRAND.mapLink` (Google Maps app, đúng ghim).
-   *Nếu muốn bản đồ phong cách Google trong app thật:* dùng **Maps Embed API** (`/maps/embed/v1/place?key=...&q=lat,lng`) hoặc mã `pb` từ Share→Embed.
-8. **Footer** (nền `stage` tối) — tên nhà xe, eyebrow, các dòng: địa chỉ (MapPin, **bấm → mở map**),
-   SĐT (Phone, bấm gọi), Zalo (Chat), Facebook; nút "Chỉ đường tới nhà xe" (→ `mapLink`).
-   Chừa `padding-bottom ~130px` cho sticky bar.
+## MÀN HÌNH 1 — TRANG CHỦ (8 chương)
+
+### Hero (nền `stage` tối)
+- Eyebrow chấm cobalt nhịp khẽ + "DỊCH VỤ CHO THUÊ XE · An Giang".
+- **h1 "drive-in & brake"**: 3 dòng ("Đi xa thật dễ." / "Chỉ một" / "cuộc gọi.") lao vào từ trái,
+  hơi nhoè tốc độ (`blur`) rồi **giảm tốc gấp, vượt đà nhẹ rồi dừng** (`@keyframes driveIn`, stagger `--i`).
+- **HeroShowcase** (`snippets/components/HeroShowcase.tsx`): carousel khoe **3 xe đầu**, tự lướt ngang
+  `~3,8s` (track `translateX(-idx*100%)`), caption tên xe + số chỗ, **chấm chỉ báo** bấm được,
+  **chạm → tạm dừng**, ảnh hiện tại "thở" (Ken Burns). `prefers-reduced-motion` → đứng yên.
+- Cặp CTA Gọi ngay (nền trắng) / Nhắn Zalo (ghost) + gợi ý "Cuộn".
+
+### `<div className="journey">` chứa `<JourneyRail/>` + 8 `<Chapter/>`
+`JourneyRail` (`snippets/components/JourneyRail.tsx`) render: `.spine` (ray), `.spine-fill` (đổ cobalt),
+`.rail-start` (điểm xuất phát), `.rail-dest` (ghim đích MapPin), `.rail-car` (xe + đèn). `Chapter` render
+`.node` (sáng cobalt khi xe qua) + head (số/vạch/nhãn tự biên đạo) + label + children.
+
+1. **01 · Dịch vụ — "Bạn cần đi đâu?"** — 4 hàng `.svc-row` (**bấm được**): ô icon 46px + nhãn + sub + chevron.
+   Bấm → mở **ContactSheet kiểu `service`**: tiêu đề "Cần xe · <dịch vụ>" + hộp "ĐANG SẴN XE PHÙ HỢP ·
+   bấm để xem" với **chip xe gợi ý** (theo `SVC_SUGGEST`) — **bấm chip → mở thẳng trang chi tiết xe** —
+   + nút Gọi/Zalo.
+2. **02 · Đội xe — "Xe của chúng tôi"** — hint "Cuộn để lật qua N xe" + **CarStack**: các thẻ
+   `.car-stack-item` dùng **`position:sticky`** với `top` lệch dần (78/90/102/114px) → **xếp chồng** khi cuộn.
+   ⚠️ Sticky hỏng nếu có **tổ tiên bị `transform`/`overflow:hidden`** → **đừng bọc thẻ trong Reveal**
+   (Reveal đặt transform). Mỗi **CarCard**: ảnh 16:10 (+badge "Phổ biến nhất"/"Xe cưới"), tên xe,
+   số chỗ/loại, **bảng giá 2 cột**; nếu có khuyến mãi: **chip "Ưu đãi tháng 6"** (viền ink, KHÔNG đỏ) +
+   **giá gạch** `.was` (xám) trên giá mới; nút "Xem chi tiết" + nút gọi nhanh.
+3. **03 · Báo giá — "Tính nhanh chi phí"** → **QuickQuote** (`snippets/components/QuickQuote.tsx`):
+   chọn xe (chip) → hình thức (segmented Có tài xế/Tự lái; tự khoá Tự lái nếu xe không có) →
+   số ngày (stepper) → toggle "Đi xa/qua đêm" → **"Tạm tính" cập nhật ngay** (giá ngày × số ngày,
+   dùng giá ưu đãi nếu có; có hiệu ứng "nảy"). Nút **"Gửi yêu cầu này"** → ContactSheet kiểu `quote`
+   tóm tắt Xe/Hình thức/Số ngày/Đi xa/Tạm tính + Gọi/Zalo.
+4. **04 · Lựa chọn — "Tự lái hay có tài xế?"** — 2 mục, icon **vô lăng lắc qua-lại** (`steerRock`) cho
+   "Có tài xế", **chìa khoá xoay** (`keyTurn`) cho "Tự lái". Phân tách hairline.
+5. **05 · Đánh giá — "Bà con tin tưởng"** — **marquee** trôi ngang liền mạch: thẻ `flex:0 0 300px` +
+   `margin-right:14px`, track **2 bản** danh sách, `translateX(0)→-50%` `linear ~52s`, **mask mờ 2 mép**,
+   **chạm/hover → paused**. reduced-motion → wrap xuống dòng. Sao cobalt + câu "…" + "— Tên, địa phương".
+6. **06 · Đối tác** — thẻ "Bạn có xe muốn cho thuê?" + nút ghost "Trở thành đối tác ↗".
+7. **07 · Vị trí — "Ghé nhà xe"** — địa chỉ + **bản đồ nhúng**.
+   ⚠️ Google `output=embed` **bị chặn iframe** (`ERR_BLOCKED_BY_RESPONSE`) — KHÔNG dùng. Đang dùng
+   **OpenStreetMap** (keyless): `https://www.openstreetmap.org/export/embed.html?bbox=<minlon,minlat,maxlon,maxlat>&layer=mapnik&marker=<lat,lng>`,
+   `filter:grayscale(.15)`, placeholder "Đang tải bản đồ…". Toạ độ **`10.534045, 105.16464`**.
+   Nút "Chỉ đường" → `BRAND.mapLink` (Google Maps app). *(Có key → đổi sang Maps Embed API.)*
+8. **08 · Đến nơi (Footer, nền `stage`)** — tên nhà xe, chủ xe, các dòng: địa chỉ (bấm mở map),
+   SĐT (gọi), Zalo, Facebook; nút "Chỉ đường tới nhà xe". Chừa `padding-bottom ~130px` cho sticky bar.
 
 ## MÀN HÌNH 2 — CHI TIẾT XE
-1. **Back bar** sticky kính mờ trên nền tối (nút chevron-left + tên xe).
-2. **Car3DViewer** — `<model-viewer>` trên **sân khấu tối** (`stage`), cao ~420px:
-   `camera-controls auto-rotate auto-rotate-delay=3000 rotation-per-second=14deg shadow-intensity=1.1
-   exposure=0.9 ar ar-modes="webxr scene-viewer quick-look" loading="eager"`.
-   Overlay: nhãn "MÔ HÌNH 3D" (icon cube) góc trên trái; **gesture hint** "Vuốt để xoay · chụm để zoom"
-   (pill mờ, tự fade sau ~5.5s); **nút AR** "Xem trong sân nhà bạn" góc dưới phải (gọi `mv.activateAR()`).
-   **Trạng thái tải**: poster tối + spinner + "Đang tải mô hình 3D…", ẩn khi event `load`;
-   **fallback** sang poster ảnh thật khi `error`/không hỗ trợ. (Hiện dùng model mẫu `ToyCar.glb` từ
-   jsDelivr — **thay bằng .glb xe thật**.)
-3. Tên xe (h1 30px) + số chỗ (Users) + loại.
-4. **CarGallery** — dải ảnh thật vuốt ngang `scroll-snap`, mỗi ảnh 84% bề rộng, nút chevron trái/phải,
-   thanh tiến trình các đoạn (đoạn active màu ink).
-5. **Mô tả** ngắn (eyebrow "MÔ TẢ" + body 17px).
-6. **PriceTable** — khung viền bo 16px: 2 hàng "Có tài xế / Tự lái", số 24px/800 + " đ/ngày" (muted),
-   ghi chú nhỏ mỗi hàng, hairline giữa; chú thích phụ phí bên dưới.
-7. **OwnerCard** — thẻ: ảnh tròn 60px + "Chủ xe / Anh Tư" + badge cobalt "Uy tín" (icon Shield).
-8. Cặp CTA **Gọi ngay / Nhắn Zalo** cuối nội dung (ngoài sticky bar).
+1. **Back bar** sticky kính mờ nền tối (chevron-left + tên xe).
+2. **Car3DViewer** — `<model-viewer>` trên sân khấu tối (~420px): `camera-controls auto-rotate
+   auto-rotate-delay=3000 rotation-per-second=14deg shadow-intensity=1.1 exposure=0.9 ar
+   ar-modes="webxr scene-viewer quick-look" loading="eager"`. Overlay: nhãn "MÔ HÌNH 3D",
+   gesture hint tự fade ~5.5s, nút AR "Xem trong sân nhà bạn" (`mv.activateAR()`). Trạng thái tải
+   (poster tối + spinner), fallback ảnh thật khi `error`. (Hiện ToyCar mẫu từ jsDelivr — **thay .glb thật**.)
+3. Tên xe (h1 30px) + số chỗ + loại.
+4. **CarGallery** — ảnh thật vuốt ngang `scroll-snap` (mỗi ảnh 84%), nút chevron, thanh tiến trình đoạn.
+5. **Mô tả** ngắn.
+6. **PriceTable** — 2 hàng Có tài xế/Tự lái, số 24px/800; **nếu khuyến mãi**: chip "Ưu đãi" cạnh "Bảng giá"
+   + **giá gạch** cạnh giá mới. Ghi chú phụ phí bên dưới.
+7. **OwnerCard** — ảnh tròn + "Chủ xe / Anh Hiếu" + badge cobalt "Uy tín".
+8. Cặp CTA Gọi ngay / Nhắn Zalo cuối nội dung.
 
 ## StickyContactBar (cả 2 màn)
-Cố định đáy, **kính mờ** (`backdrop-filter: blur(18px) saturate(1.4)`), nền `rgba(250,250,250,.72)`,
-viền trên hairline. Chứa **Gọi ngay** (ink) + **Nhắn Zalo** (ghost). `padding-bottom` cộng safe-area.
+Cố định đáy, **căn giữa cột** (`left:50%; transform:translateX(-50%); max-width:448px`), **kính mờ**
+(`backdrop-filter: blur(18px) saturate(1.4)`). Gọi ngay (ink) + Nhắn Zalo (ghost). `padding-bottom` + safe-area.
 
-## ContactSheet (bottom sheet)
-Bấm bất kỳ nút Gọi/Zalo → overlay mờ + sheet trượt từ đáy (radius 22px trên). Hiển thị icon,
-nhãn ("Gọi cho nhà xe"/"Nhắn Zalo cho nhà xe"), **số điện thoại lớn**, nút hành động
-(`tel:0901234567` / `https://zalo.me/<id>`) + nút "Đóng". Animation `sheetUp` cubic-bezier(.16,1,.3,1).
+## ContactSheet — 4 kiểu (xem `snippets/hooks/useContact.ts` + `ContactSheet.tsx`)
+`"call" | "zalo" | {kind:"service", service} | {kind:"quote", data}`. Sheet trượt từ đáy (`sheetUp`),
+luôn có **cả Gọi & Zalo**; kiểu `service` thêm chip xe gợi ý (bấm → chi tiết); kiểu `quote` thêm hộp tóm tắt.
 
 ---
 
-## Tương tác & chuyển động
-- **Reveal khi cuộn**: fade + dịch lên `translateY(16px)→0`, `transition .7s cubic-bezier(.16,1,.3,1)`,
-  trigger bằng IntersectionObserver (threshold .12). **Bắt buộc có fallback** hiện nội dung sau
-  ~1.3s nếu observer chưa kích hoạt (vd tab ẩn) — không để nội dung kẹt ở opacity 0.
-  Tôn trọng `prefers-reduced-motion`.
-- **Chuyển màn** Home ↔ Detail: fade + dịch nhỏ; **reset scroll về top** khi đổi màn.
-- Xe 3D **tự xoay chậm khi nhàn rỗi**; hint cử chỉ fade dần.
-- `:active` nút: `scale(.975)`. Focus/hover dùng cobalt rất nhẹ. Không hiệu ứng giật.
+## Tương tác & chuyển động (chỉ `transform`/`opacity` — mượt máy yếu; mọi thứ có `prefers-reduced-motion`)
+- **Reveal khi cuộn**: fade + dịch (biến thể up/up-lg/left/scale/mask qua `--rv-hidden`), IntersectionObserver
+  `root=.page`; **bắt buộc fallback** hiện nội dung sau ~1.3–1.4s (không kẹt opacity 0).
+- **Chapter tự biên đạo** khi `.show`: `.chapter-num` hiện, `.chapter-rule` `scaleX(0→1)`, `.chapter-tag` &
+  `.chapter-label` trồi lên (stagger qua transition-delay).
+- **JourneyRail**: `requestAnimationFrame`; xe `translateY` theo % cuộn; `.spine-fill` cao dần; `.node` bật `.on`;
+  **đèn**: `.adv`/`.rev`/`.brake` theo hướng cuộn (rev = `revBlink` đỏ; reduced-motion → đỏ tĩnh).
+- **Hero**: `driveIn` (chữ) + Ken Burns (ảnh) + `dotPulse` (chấm).
+- **CarStack**: sticky stacking (không phải transform). **DriveOptions**: `steerRock` / `keyTurn`.
+- **Marquee** đánh giá; **StickyBar** `barUp` khi tải; **chuyển màn** Home↔Detail fade + **reset scroll `.page` về top**.
+- `:active` nút `scale(.975)`.
 
-### Mỗi section một chuyển động "chữ ký" (chỉ transform/opacity — rẻ, mượt trên máy yếu)
-- **Hero**: 3 dòng tiêu đề trồi lên so le (`translateY(34px)→0`, delay 80/175/270ms);
-  ảnh hero "thở" zoom rất chậm (`scale(1)→1.045`, 16s ease-in-out alternate, bọc `overflow:hidden`);
-  chấm cobalt có vòng nhịp khẽ (`dotPulse` 2.6s).
-- **ServiceTypes**: từng hàng trượt vào từ trái (`translateX(-26px)→0`) so le 70ms.
-- **CarList**: thẻ hiện kiểu phóng nhẹ (`scale(.95)→1`) so le 50ms; hover thẻ nâng `translateY(-3px)`.
-- **DriveOptions**: 2 hàng trượt từ trái so le.
-- **Testimonials**: marquee (ở trên).
-- **StickyContactBar**: trồi lên khi tải (`translateY(120%)→0`, delay 250ms).
-- **Detail**: gallery/mô tả/bảng giá/thẻ chủ xe reveal so le; xe 3D tự xoay khi nhàn rỗi.
-- **Lưu ý hiệu năng**: 5G ≠ máy mạnh — chỉ animate `transform`/`opacity`, tránh `blur`/`box-shadow`
-  động; mọi animation phải có nhánh `prefers-reduced-motion`.
-
-## State
-- `screen: 'home' | 'detail'`, `selectedCar`, `sheet: null | 'call' | 'zalo'`.
-- Dữ liệu xe nên fetch từ CMS/JSON; hiện hardcode 4 xe trong `reference/app/data.jsx` (Vios/Innova/CX-5/Transit).
+## State (xem `reference/app/app2.jsx`)
+`screen:'home'|'detail'`, `selectedCar`, `sheet: ContactState`. Đổi màn → cuộn `.page` về top.
+Dữ liệu xe/dịch vụ: `snippets/config/cars.ts` (CARS có promo, SERVICES, TESTIMONIALS, SVC_SUGGEST, parsePrice/formatVnd).
 
 ## Assets cần thay
-- **Ảnh xe thật** (hero full-bleed + dải gallery mỗi xe) — hiện là ô placeholder sọc + nhãn mono.
-- **File .glb** mô hình 3D từng xe (+ poster ảnh) — hiện dùng ToyCar mẫu.
-- **Thông tin liên hệ** (đã điền): **Thuê Xe Trung Hiếu** · ĐT/Zalo **0326120108** ·
-  **Khu dân cư kênh 10, ấp Bờ Dâu, xã Thạnh Mỹ Tây, Tỉnh An Giang** · chủ xe **Anh Hiếu** ·
-  **Google Maps:** `https://maps.app.goo.gl/ptcb9NfjbUnhGPRb7` (nút Chỉ đường) ·
-  **Toạ độ:** `10.534045, 105.16464` (ô nhúng OpenStreetMap).
-  Tất cả đặt trong `BRAND` (reference/app/data.jsx) — dễ đổi, nên đưa ra 1 file config.
+- **Ảnh xe thật**: 3 ảnh Hero (showcase) + dải gallery mỗi xe + ảnh thẻ — hiện placeholder sọc + nhãn mono.
+- **File .glb** 3D từng xe (+ poster) — hiện ToyCar mẫu.
+- **Giá/khuyến mãi**: số ưu đãi + giá gạch + thời hạn ("tháng 6"…) đang là mẫu — thay số thật trong `cars.ts`.
+- **Liên hệ (đã điền)**: Thuê Xe Trung Hiếu · ĐT/Zalo **0326120108** · Khu dân cư kênh 10, ấp Bờ Dâu,
+  xã Thạnh Mỹ Tây, Tỉnh An Giang · chủ xe Anh Hiếu · Maps `https://maps.app.goo.gl/ptcb9NfjbUnhGPRb7` ·
+  Toạ độ `10.534045, 105.16464`. Tất cả trong `snippets/config/brand.ts`.
 
-## Files tham chiếu
-- `reference/index.html` — tokens, CSS nền, khung điện thoại, thứ tự load.
-- `reference/app/data.jsx` — nội dung & dữ liệu xe.
-- `reference/app/icons.jsx` — bộ icon (map sang lucide-react cùng tên).
-- `reference/app/ui.jsx` — Reveal (+fallback), Photo placeholder, Stars, Eyebrow.
-- `reference/app/home.jsx` — toàn bộ section trang chủ.
-- `reference/app/detail.jsx` — Car3DViewer, CarGallery, PriceTable, OwnerCard.
-- `reference/app/app.jsx` — routing, StickyContactBar, ContactSheet.
+## Files tham chiếu (V2)
+- `reference/index.html` — tokens + **TOÀN BỘ CSS** (port sang globals.css) + thứ tự load.
+- `reference/app/data.jsx` — BRAND + CARS (promo) + SERVICES + TESTIMONIALS.
+- `reference/app/icons.jsx` — bộ icon (map sang lucide-react cùng tên: phone, chat→MessageCircle, users→Users, steering, keyRound, stethoscope, heart, palm→TreePalm, navigation, cube→Box, rotate3d→Rotate3d, sparkle→Sparkles…).
+- `reference/app/ui.jsx` — Reveal (+fallback, biến thể), Photo placeholder, Stars, Eyebrow.
+- `reference/app/rail.jsx` — **JourneyRail (xe + đèn theo scroll) + Chapter (tự biên đạo)**.
+- `reference/app/home2.jsx` — Hero+HeroShowcase, 8 chương, CarCard (promo), **EstimatorChapter/QuickQuote**, DriveOptions, Marquee, Footer.
+- `reference/app/detail.jsx` — Car3DViewer, CarGallery, PriceTable (promo), OwnerCard.
+- `reference/app/app2.jsx` — routing, StickyContactBar, **ContactSheet 4 kiểu**, onService/onQuote/onPickCar.
+
+## Snippets TypeScript (scaffold sẵn type)
+- `snippets/config/brand.ts` · `snippets/config/cars.ts` (CARS+promo, SERVICES, SVC_SUGGEST, parsePrice/formatVnd).
+- `snippets/components/JourneyRail.tsx` (JourneyRail + Chapter) · `HeroShowcase.tsx` · `QuickQuote.tsx` · `ContactSheet.tsx` (4 kiểu) · `StickyContactBar.tsx` · `Car3DViewer.tsx` · `MapEmbed.tsx` · `Reveal.tsx`.
+- `snippets/hooks/useContact.ts` (4 kiểu) · `useReveal.ts` · `snippets/types/model-viewer.d.ts` · `snippets/tailwind.config.ts` · `snippets/app/globals.snippet.css`.

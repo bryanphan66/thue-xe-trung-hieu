@@ -1,66 +1,138 @@
 "use client";
 
-import { Phone, MessageCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import {
+  Phone,
+  MessageCircle,
+  Sparkles,
+  ArrowRight,
+  Stethoscope,
+  HeartHandshake,
+  TreePalm,
+  Navigation,
+  type LucideIcon,
+} from "lucide-react";
 import { BRAND, tel, zaloLink } from "@/config/brand";
-import type { ContactKind } from "@/hooks/useContact";
+import { SVC_SUGGEST, formatVnd, type ServiceIcon } from "@/config/services";
+import type { Car } from "@/types/db";
+import type { ContactState } from "@/hooks/useContact";
+
+const SVC_ICON: Record<ServiceIcon, LucideIcon> = {
+  stethoscope: Stethoscope,
+  heart: HeartHandshake,
+  palm: TreePalm,
+  navigation: Navigation,
+};
 
 /**
- * ContactSheet — bottom sheet hiện số điện thoại + nút hành động thật.
- * Mở từ bất kỳ nút Gọi/Zalo. Bấm nền mờ hoặc "Đóng" để tắt.
+ * ContactSheet — bottom sheet liên hệ, 4 kiểu (call/zalo/service/quote).
+ * Luôn có cả Gọi & Zalo. service: chip xe gợi ý (bấm → chi tiết). quote: hộp tóm tắt.
  */
 export function ContactSheet({
   open,
+  cars,
   onClose,
+  onPickCar,
 }: {
-  open: ContactKind;
+  open: ContactState;
+  cars: Car[];
   onClose: () => void;
+  onPickCar: (slug: string) => void;
 }) {
-  const t = useTranslations("actions");
-  const ts = useTranslations("contactSheet");
   if (!open) return null;
+
+  const isService = typeof open === "object" && open.kind === "service";
+  const isQuote = typeof open === "object" && open.kind === "quote";
   const isCall = open === "call";
+  const svc = isService ? open.service : null;
+  const q = isQuote ? open.data : null;
+
+  let suggest: Car[] = [];
+  if (svc) {
+    const names = SVC_SUGGEST[svc.icon] ?? [];
+    suggest = cars.filter((c) => names.includes(c.name));
+    if (suggest.length === 0) suggest = cars.slice(0, 3);
+  }
+
+  const heading = isQuote
+    ? "Yêu cầu báo giá"
+    : isService
+      ? `Cần xe · ${svc!.label}`
+      : isCall
+        ? "Gọi cho nhà xe"
+        : "Nhắn Zalo cho nhà xe";
+
+  const HeadIcon = isQuote ? Sparkles : isService ? SVC_ICON[svc!.icon] : isCall ? Phone : MessageCircle;
 
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[80] flex items-end bg-ink/40 backdrop-blur-[2px]"
+      className="fixed inset-0 z-[80] flex items-end justify-center bg-ink/40 backdrop-blur-[2px]"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full animate-sheetUp rounded-t-sheet bg-surface px-[22px] pb-[calc(28px+env(safe-area-inset-bottom))] pt-2.5"
+        className="w-full max-w-mobile animate-sheetUp rounded-t-sheet bg-surface px-[22px] pb-[calc(28px+env(safe-area-inset-bottom))] pt-2.5"
       >
         <div className="mx-auto mb-[22px] h-1 w-[38px] rounded-full bg-hairline" />
 
         <div className="flex items-center gap-3.5">
           <div className="grid h-[52px] w-[52px] shrink-0 place-items-center rounded-[14px] bg-ink text-white">
-            {isCall ? <Phone size={24} /> : <MessageCircle size={24} />}
+            <HeadIcon size={24} />
           </div>
           <div>
-            <div className="text-[13.5px] font-medium text-muted">
-              {isCall ? ts("callTitle") : ts("zaloTitle")}
-            </div>
-            <div className="mt-0.5 text-[23px] font-extrabold tracking-[-0.03em]">
-              {BRAND.phone}
-            </div>
+            <div className="text-[13.5px] font-medium text-muted">{heading}</div>
+            <div className="mt-0.5 text-[23px] font-extrabold tracking-[-0.03em]">{BRAND.phone}</div>
           </div>
         </div>
 
-        <a
-          href={isCall ? tel : zaloLink}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-[22px] flex h-[52px] items-center justify-center gap-2 rounded-btn bg-ink text-[16.5px] font-semibold text-white"
-        >
-          {isCall ? <Phone size={19} /> : <MessageCircle size={19} />}
-          {isCall ? t("callNow") : t("openZalo")}
+        {isQuote && q && (
+          <div className="mt-[18px] rounded-xl border border-hairline bg-bg px-4 py-3.5">
+            {[
+              ["Xe", q.carName],
+              ["Hình thức", q.mode === "self" ? "Tự lái" : "Có tài xế"],
+              ["Số ngày", `${q.days} ngày`],
+              ...(q.far ? [["Lưu ý", "Đi xa / qua đêm"]] : []),
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-3 py-1 text-[14.5px]">
+                <span className="muted">{k}</span>
+                <span className="font-semibold">{v}</span>
+              </div>
+            ))}
+            <div className="mt-2 flex items-baseline justify-between gap-3 border-t border-hairline pt-2.5">
+              <span className="font-semibold">Tạm tính</span>
+              <span className="text-[21px] font-extrabold tracking-[-0.03em]">{formatVnd(q.total)} đ</span>
+            </div>
+          </div>
+        )}
+
+        {isService && (
+          <div className="mt-[18px] rounded-xl border border-hairline bg-bg px-4 py-3.5">
+            <div className="text-[12.5px] font-semibold uppercase tracking-wide text-muted">
+              Đang sẵn xe phù hợp · bấm để xem
+            </div>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {suggest.map((c) => (
+                <button
+                  key={c.slug}
+                  onClick={() => onPickCar(c.slug)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-3 py-2 text-sm font-semibold"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                  {c.name}
+                  <ArrowRight size={15} className="text-muted" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <a href={tel} className="btn btn-primary mt-[18px]">
+          <Phone size={19} /> Gọi ngay
         </a>
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-2.5 flex h-[52px] w-full items-center justify-center rounded-btn border border-hairline text-[16.5px] font-semibold"
-        >
-          {t("close")}
+        <a href={zaloLink} target="_blank" rel="noreferrer" className="btn btn-ghost mt-2.5">
+          <MessageCircle size={19} /> Nhắn Zalo
+        </a>
+        <button type="button" onClick={onClose} className="btn btn-ghost mt-2.5 border-none">
+          Đóng
         </button>
       </div>
     </div>

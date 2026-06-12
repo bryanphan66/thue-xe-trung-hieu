@@ -1,15 +1,23 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
-import { useContact } from "@/hooks/useContact";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
+import { useRouter, usePathname } from "@/i18n/navigation";
+import { useContact, type QuoteRequest } from "@/hooks/useContact";
+import type { Service } from "@/config/services";
+import type { Car } from "@/types/db";
 import { StickyContactBar } from "./StickyContactBar";
 import { ContactSheet } from "./ContactSheet";
 
-type ContactActions = { call: () => void; zalo: () => void };
+type ContactActions = {
+  call: () => void;
+  zalo: () => void;
+  service: (s: Service) => void;
+  quote: (data: QuoteRequest) => void;
+};
 
 const ContactContext = createContext<ContactActions | null>(null);
 
-/** Mở bottom sheet liên hệ từ bất kỳ component nào (hero, card, footer...). */
+/** Mở sheet liên hệ (4 kiểu) từ bất kỳ component nào trong cây. */
 export function useContactActions(): ContactActions {
   const ctx = useContext(ContactContext);
   if (!ctx) throw new Error("useContactActions must be used within ContactProvider");
@@ -17,16 +25,38 @@ export function useContactActions(): ContactActions {
 }
 
 /**
- * Bọc cả app: giữ state sheet, render StickyContactBar + ContactSheet,
- * và cấp call/zalo cho cây con qua context.
+ * Bọc cả app: giữ state sheet (4 kiểu), render StickyContactBar + ContactSheet,
+ * cấp call/zalo/service/quote cho cây con, và reset cuộn .page khi đổi route.
  */
-export default function ContactProvider({ children }: { children: ReactNode }) {
+export default function ContactProvider({
+  cars,
+  children,
+}: {
+  cars: Car[];
+  children: ReactNode;
+}) {
   const c = useContact();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Đổi route → cuộn cột .page về đầu (mô hình "đổi màn" của V2).
+  useEffect(() => {
+    document.querySelector<HTMLElement>(".page")?.scrollTo({ top: 0, behavior: "auto" });
+  }, [pathname]);
+
   return (
-    <ContactContext.Provider value={{ call: c.call, zalo: c.zalo }}>
+    <ContactContext.Provider value={{ call: c.call, zalo: c.zalo, service: c.service, quote: c.quote }}>
       {children}
       <StickyContactBar onCall={c.call} onZalo={c.zalo} />
-      <ContactSheet open={c.open} onClose={c.close} />
+      <ContactSheet
+        open={c.open}
+        cars={cars}
+        onClose={c.close}
+        onPickCar={(slug) => {
+          c.close();
+          router.push(`/xe/${slug}`);
+        }}
+      />
     </ContactContext.Provider>
   );
 }
