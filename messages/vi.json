@@ -71,9 +71,12 @@
   },
   "detail": {
     "model3d": "Mô hình 3D",
+    "spin360": "Ảnh xoay 360°",
     "gestureHint": "Vuốt để xoay · chụm để zoom",
+    "gestureHintSpin": "Vuốt ngang để xoay xe",
     "ar": "Xem trong sân nhà bạn",
     "loading3d": "Đang tải mô hình 3D…",
+    "loadingFrames": "Đang tải ảnh xoay…",
     "poster": "Poster ảnh xe · {name}",
     "galleryEyebrow": "Ảnh thật của xe",
     "galleryPrev": "Trước",

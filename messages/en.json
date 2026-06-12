@@ -71,9 +71,12 @@
   },
   "detail": {
     "model3d": "3D model",
+    "spin360": "360° spin",
     "gestureHint": "Swipe to rotate · pinch to zoom",
+    "gestureHintSpin": "Swipe sideways to rotate the car",
     "ar": "View in your yard",
     "loading3d": "Loading 3D model…",
+    "loadingFrames": "Loading spin photos…",
     "poster": "Car poster · {name}",
     "galleryEyebrow": "Real car photos",
     "galleryPrev": "Previous",

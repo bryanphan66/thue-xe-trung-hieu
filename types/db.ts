@@ -11,6 +11,7 @@ export type Car = {
   badge: string | null; // "Phổ biến nhất" | "Xe cưới" | null
   photoCount: number; // số ảnh placeholder cho gallery (khi chưa có ảnh thật)
   photoUrls?: string[]; // ảnh thật nếu có (ưu tiên hơn photoCount)
+  spinFrames?: string[]; // ảnh xoay 360° (car_photos.kind = 'spin_frame'), sắp theo sort_order
   model3dUrl?: string | null; // .glb mô hình 3D (null = dùng model mẫu)
   posterUrl?: string | null; // poster ảnh thật fallback cho 3D
 };

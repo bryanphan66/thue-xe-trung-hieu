@@ -23,14 +23,14 @@ type CarRow = {
   photo_count: number | null;
   model_3d_url: string | null;
   poster_url: string | null;
-  car_photos?: { url: string; sort_order: number }[];
+  // `kind` có thể chưa tồn tại trong DB cũ → optional (dùng car_photos(*) để an toàn ngược).
+  car_photos?: { url: string; sort_order: number; kind?: string | null }[];
 };
 
 function mapRow(r: CarRow): Car {
-  const photos = (r.car_photos ?? [])
-    .slice()
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map((p) => p.url);
+  const sorted = (r.car_photos ?? []).slice().sort((a, b) => a.sort_order - b.sort_order);
+  const spinFrames = sorted.filter((p) => p.kind === "spin_frame").map((p) => p.url);
+  const photos = sorted.filter((p) => p.kind !== "spin_frame").map((p) => p.url);
   return {
     slug: r.slug,
     name: r.name,
@@ -42,6 +42,7 @@ function mapRow(r: CarRow): Car {
     badge: r.badge,
     photoCount: r.photo_count ?? photos.length,
     photoUrls: photos.length ? photos : undefined,
+    spinFrames: spinFrames.length ? spinFrames : undefined,
     model3dUrl: r.model_3d_url,
     posterUrl: r.poster_url,
   };
@@ -51,7 +52,7 @@ export async function getCars(): Promise<Car[]> {
   if (!supabase) return fixtureCars;
   const { data } = await supabase
     .from("cars")
-    .select("*, car_photos(url, sort_order)")
+    .select("*, car_photos(*)")
     .eq("available", true)
     .order("featured", { ascending: false });
   if (!data || data.length === 0) return fixtureCars;
@@ -62,7 +63,7 @@ export async function getCar(slug: string): Promise<Car | null> {
   if (!supabase) return fixtureCars.find((c) => c.slug === slug) ?? null;
   const { data } = await supabase
     .from("cars")
-    .select("*, car_photos(url, sort_order)")
+    .select("*, car_photos(*)")
     .eq("slug", slug)
     .maybeSingle();
   return data ? mapRow(data as CarRow) : null;

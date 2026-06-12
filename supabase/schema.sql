@@ -42,7 +42,8 @@ create table if not exists car_photos (
   id uuid primary key default gen_random_uuid(),
   car_id uuid references cars(id) on delete cascade,
   url text not null,
-  sort_order int default 0
+  sort_order int default 0,
+  kind text default 'photo'   -- 'photo' = ảnh gallery | 'spin_frame' = khung ảnh xoay 360°
 );
 
 -- Yêu cầu của chủ xe khác muốn tham gia

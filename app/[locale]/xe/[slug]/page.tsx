@@ -9,6 +9,7 @@ import JsonLd from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import Eyebrow from "@/components/Eyebrow";
 import Car3DViewer from "@/components/Car3DViewer";
+import Car360 from "@/components/Car360";
 import BackBar from "@/components/BackBar";
 import CarGallery from "@/components/CarGallery";
 import PriceTable from "@/components/PriceTable";
@@ -70,11 +71,16 @@ export default async function CarDetailPage({
       <JsonLd data={carJsonLd(car)} />
       <BackBar name={car.name} />
 
-      <Car3DViewer
-        src={car.model3dUrl ?? CAR_MODEL_URL}
-        poster={car.posterUrl ?? undefined}
-        name={car.name}
-      />
+      {car.spinFrames && car.spinFrames.length >= 8 ? (
+        // Có ảnh xoay 360° thật → ưu tiên (nhẹ, đúng xe thật).
+        <Car360 frames={car.spinFrames} name={car.name} />
+      ) : (
+        <Car3DViewer
+          src={car.model3dUrl ?? CAR_MODEL_URL}
+          poster={car.posterUrl ?? undefined}
+          name={car.name}
+        />
+      )}
 
       <div className="container" style={{ paddingTop: 26 }}>
         <Reveal>

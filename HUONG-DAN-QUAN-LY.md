@@ -114,6 +114,21 @@ Mở bảng `cars` → **Insert row**:
 
 ---
 
+## 5b. Ảnh xoay 360° (đẹp nhất, dùng ảnh thật)
+
+Cho khách **vuốt để xoay xe** — nhìn như 3D nhưng là **ảnh thật của xe**, nhẹ, không cần file 3D.
+
+**Chụp:** đi đều quanh xe, mỗi ~15° chụp 1 tấm bằng điện thoại (24–36 tấm), giữ nguyên khoảng cách + độ cao, xe luôn nằm giữa khung, nền gọn, ánh sáng đều.
+
+**Đưa lên web:**
+1. Lần đầu: chạy 1 lần file `supabase/add-360.sql` trong SQL Editor (thêm cột `kind`).
+2. Upload các khung ảnh lên Storage, copy URL từng tấm.
+3. Chèn vào bảng `car_photos` với `kind` = **`spin_frame`**, `sort_order` = 0,1,2,… theo đúng thứ tự vòng quay (xem ví dụ SQL trong file `add-360.sql`).
+
+> Cần **≥ 8 khung** mới bật chế độ xoay (24–36 là mượt nhất). Có ảnh xoay thì trang chi tiết tự thay mô hình 3D bằng khối xoay 360°. Ảnh gallery thường vẫn để `kind` = `photo`.
+
+---
+
 ## 6. Đăng web lên Vercel & nối Supabase
 
 1. Vào https://vercel.com → đăng nhập bằng GitHub → **Add New → Project** → chọn repo này → **Deploy**.
