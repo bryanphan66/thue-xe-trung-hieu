@@ -14,9 +14,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...cars.map((c) => `/xe/${c.slug}`),
   ];
 
+  const lastModified = new Date();
   return routing.locales.flatMap((locale) =>
     paths.map((path) => ({
       url: `${base}/${locale}${path}`,
+      lastModified,
       changeFrequency: "weekly" as const,
       priority: path === "" ? 1 : 0.7,
     })),

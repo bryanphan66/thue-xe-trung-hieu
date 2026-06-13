@@ -122,13 +122,15 @@ Quản trị: chủ xe sửa dữ liệu trong Supabase Table Editor (không có
 - *Không trong DB:* khuyến mãi (`config/promos.ts` theo slug), dịch vụ + gợi ý số chỗ (`config/services.ts`), thương hiệu (`config/brand.ts`).
 
 ## 18. Backlog v-next (ưu tiên)
+**✅ Đã làm (2026-06-13) — SEO gói 1:** OG image dùng ảnh thật (`public/og.jpg` qua `scripts/make-og.mjs`) + twitter `summary_large_image`; **FAQPage** (trang chủ) + **BreadcrumbList** (trang xe) JSON-LD; sitemap `lastModified`; ảnh thật tối ưu ở `public/cars/`. **Google Business Profile** đã nộp, chờ Google duyệt (≤5 ngày từ 13/6).
+
 **P0 — giá trị cao, chặn trải nghiệm thật**
-- Ảnh xe thật: hero/gallery + **360° spin** (≥8 frame, dùng `car_photos.kind='spin_frame'` đã sẵn).
+- **Đưa ảnh xe thật lên WEBSITE** (đã có `public/cars/innova.jpg`, `storefront.jpg`): upload Supabase Storage + thêm `car_photos` (hoặc fallback asset theo slug) → hero/gallery; sau đó **360° spin** (≥8 frame, `car_photos.kind='spin_frame'` đã sẵn) + OG riêng theo xe.
 - **ZNS** xác nhận đặt xe qua Zalo (sau khi có MST + OA duyệt) — nối vào `submitBooking`.
 - Đưa **đa chủ xe (multi-vendor) lên thật**: thêm `owner` + `cars` trong Supabase; cân nhắc hiển thị tên/owner theo `owners` thay vì chỉ `config/brand`.
 
 **P1 — tăng chuyển đổi / vận hành**
-- Google Business Profile (Maps) verify; thu thập + duyệt đánh giá thật (`testimonials.approved`).
+- Sau khi GBP duyệt: nhờ khách **đánh giá thật** trên Maps + đưa vào web (`testimonials.approved`) → thêm `aggregateRating` (sao vàng).
 - FB post kèm **ảnh** (Graph `/photos`); tinh chỉnh tần suất theo reach.
 - Trang/ý đơn giản xem `bookings` (nếu Supabase Table Editor chưa đủ) — vẫn tránh portal nặng.
 - Lọc/giá theo **đi xa (km/tuyến)** nếu chủ xe muốn rõ ràng hơn "báo giá khi gọi".

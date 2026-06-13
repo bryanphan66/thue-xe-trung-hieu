@@ -68,8 +68,14 @@ export async function generateMetadata({
       description,
       url: `/${locale}`,
       locale: locale === "vi" ? "vi_VN" : "en_US",
+      images: [{ url: "/og.jpg", width: 1200, height: 630, alt: BRAND.name }],
     },
-    twitter: { card: "summary", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og.jpg"],
+    },
     robots: { index: true, follow: true },
   };
 }

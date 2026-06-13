@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { Users, Camera } from "lucide-react";
 import { getCar } from "@/lib/data";
 import { BRAND } from "@/config/brand";
-import { carJsonLd } from "@/lib/seo";
+import { carJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import Eyebrow from "@/components/Eyebrow";
@@ -63,6 +63,7 @@ export default async function CarDetailPage({
   return (
     <main className="screen">
       <JsonLd data={carJsonLd(car)} />
+      <JsonLd data={breadcrumbJsonLd(car, locale)} />
       <BackBar name={car.name} />
 
       {car.spinFrames && car.spinFrames.length >= 8 ? (
