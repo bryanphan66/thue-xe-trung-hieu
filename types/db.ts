@@ -32,6 +32,7 @@ export type PartnerInquiryInput = {
   phone: string;
   carInfo?: string;
   note?: string;
+  hp?: string; // honeypot — bot điền thì bỏ
 };
 
 /** Đơn "để nhà xe gọi lại" — đặt xe nhanh, chỉ bắt buộc SĐT. */
@@ -46,4 +47,5 @@ export type BookingInput = {
   days?: number;
   far?: boolean;
   total?: number;
+  hp?: string; // honeypot — bot điền thì bỏ
 };

@@ -39,7 +39,7 @@ Web cho thuê xe vùng quê (An Giang). **Hiện trạng đầy đủ: đọc `d
 ## Cách thêm/sửa nhanh
 - **Giá / xe / bật-tắt available**: Supabase Table Editor (bảng `cars`). Web tự gom theo số chỗ.
 - **Khuyến mãi**: `config/promos.ts` · **Thương hiệu/liên hệ**: `config/brand.ts` · **Dịch vụ**: `config/services.ts`.
-- **Đơn đặt xe**: bảng `bookings` (status new→called→booked) + báo Telegram (@May_2108_bot).
+- **Đơn đặt xe**: bảng `bookings` (status new→called→booked) + báo Telegram (@May_2108_bot). **Chống spam** (`lib/actions.ts`): honeypot (`hp`) + SĐT VN hợp lệ (`lib/phone.ts`) + rate limit IP/SĐT (`lib/rateLimit.ts`, **in-memory → reset khi deploy, per-instance**) + escape HTML Telegram. Muốn bền hơn (đa instance) → thay rateLimit bằng Redis/Upstash.
 - **Ảnh thật**: thả vào `incoming-photos/cars/<slug>/` & `incoming-photos/shop/` (gitignored) → chạy `node scripts/import-photos.mjs` (optimize → Supabase Storage bucket `cars` → `car_photos` / `owners.photo_url`). Web force-dynamic hiện ngay.
 - **Đánh giá**: KHÔNG dùng review giả (mục "Cam kết" thay thế). Chỉ hiện đánh giá THẬT khi có (`testimonials.approved=true`).
 - **Nội dung FB post**: `scripts/fb-post.mjs` (Groq tạo caption+tiêu đề; ảnh ghép từ `poster.mjs`). Giá/SĐT/tên xe lấy từ dữ liệu — KHÔNG để AI bịa số. Thêm ảnh xe → bỏ vào `public/cars/` (bỏ `storefront.jpg` khỏi poster). Workflow `fb-post.yml` có bước `npx playwright install chromium` để render trong CI.

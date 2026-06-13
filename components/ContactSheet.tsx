@@ -53,6 +53,7 @@ export function ContactSheet({
 }) {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
+  const [hp, setHp] = useState(""); // honeypot — người thật không thấy/không điền
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
 
   if (!open) return null;
@@ -98,6 +99,7 @@ export function ContactSheet({
     const res = await submitBooking({
       phone,
       name,
+      hp,
       source: ctx?.source ?? "book",
       purpose: ctx?.purpose,
       seatsLabel: ctx?.seatsLabel,
@@ -190,6 +192,17 @@ export function ContactSheet({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className={`${inputClass} mt-2.5`}
+              />
+              {/* Honeypot: ẩn với người thật, bot tự điền → server bỏ qua */}
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={hp}
+                onChange={(e) => setHp(e.target.value)}
+                style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
               />
 
               {status === "error" && (
