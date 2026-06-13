@@ -76,6 +76,7 @@ export async function generateMetadata({
       description,
       images: ["/og.jpg"],
     },
+    facebook: { appId: "3266946783489229" },
     robots: { index: true, follow: true },
   };
 }
