@@ -33,3 +33,16 @@ export type PartnerInquiryInput = {
   carInfo?: string;
   note?: string;
 };
+
+/** Đơn "để nhà xe gọi lại" — đặt xe nhanh, chỉ bắt buộc SĐT. */
+export type BookingInput = {
+  phone: string;
+  name?: string;
+  source?: string; // 'quote' | 'seat'
+  seatsLabel?: string; // "7 chỗ"
+  seats?: number;
+  mode?: "driver" | "self";
+  days?: number;
+  far?: boolean;
+  total?: number;
+};

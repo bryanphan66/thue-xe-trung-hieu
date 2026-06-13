@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
-import { useContact, type QuoteRequest } from "@/hooks/useContact";
+import { useContact, type BookingContext } from "@/hooks/useContact";
 import type { Service } from "@/config/services";
 import type { Car } from "@/types/db";
 import { StickyContactBar } from "./StickyContactBar";
@@ -12,7 +12,7 @@ type ContactActions = {
   call: () => void;
   zalo: () => void;
   service: (s: Service) => void;
-  quote: (data: QuoteRequest) => void;
+  book: (ctx: BookingContext) => void;
 };
 
 const ContactContext = createContext<ContactActions | null>(null);
@@ -45,18 +45,20 @@ export default function ContactProvider({
   }, [pathname]);
 
   return (
-    <ContactContext.Provider value={{ call: c.call, zalo: c.zalo, service: c.service, quote: c.quote }}>
+    <ContactContext.Provider value={{ call: c.call, zalo: c.zalo, service: c.service, book: c.book }}>
       {children}
       <StickyContactBar onCall={c.call} onZalo={c.zalo} />
-      <ContactSheet
-        open={c.open}
-        cars={cars}
-        onClose={c.close}
-        onPickCar={(slug) => {
-          c.close();
-          router.push(`/xe/${slug}`);
-        }}
-      />
+      {c.open && (
+        <ContactSheet
+          open={c.open}
+          cars={cars}
+          onClose={c.close}
+          onPickCar={(slug) => {
+            c.close();
+            router.push(`/xe/${slug}`);
+          }}
+        />
+      )}
     </ContactContext.Provider>
   );
 }

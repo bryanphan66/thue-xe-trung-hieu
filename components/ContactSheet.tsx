@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import {
   Phone,
   MessageCircle,
   Sparkles,
   ArrowRight,
+  Check,
   Stethoscope,
   HeartHandshake,
   TreePalm,
@@ -14,6 +16,7 @@ import {
 import { BRAND, tel, zaloLink } from "@/config/brand";
 import { SVC_SUGGEST, formatVnd, type ServiceIcon } from "@/config/services";
 import { groupCarsBySeats, type SeatGroup } from "@/lib/seatGroups";
+import { submitBooking } from "@/lib/actions";
 import type { Car } from "@/types/db";
 import type { ContactState } from "@/hooks/useContact";
 
@@ -24,9 +27,13 @@ const SVC_ICON: Record<ServiceIcon, LucideIcon> = {
   navigation: Navigation,
 };
 
+const inputClass =
+  "w-full min-h-[52px] rounded-[13px] border border-hairline bg-surface px-4 text-ink placeholder:text-muted outline-none focus:border-ink transition-colors";
+
 /**
- * ContactSheet — bottom sheet liên hệ, 4 kiểu (call/zalo/service/quote).
- * Luôn có cả Gọi & Zalo. service: chip xe gợi ý (bấm → chi tiết). quote: hộp tóm tắt.
+ * ContactSheet — bottom sheet liên hệ (call / zalo / service / book).
+ * book = "Để nhà xe gọi lại": form chỉ bắt buộc SĐT → submitBooking (lưu + Telegram).
+ * Render có điều kiện (mount mới mỗi lần mở) nên state form tự reset.
  */
 export function ContactSheet({
   open,
@@ -39,15 +46,18 @@ export function ContactSheet({
   onClose: () => void;
   onPickCar: (slug: string) => void;
 }) {
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
+
   if (!open) return null;
 
   const isService = typeof open === "object" && open.kind === "service";
-  const isQuote = typeof open === "object" && open.kind === "quote";
+  const isBook = typeof open === "object" && open.kind === "book";
   const isCall = open === "call";
   const svc = isService ? open.service : null;
-  const q = isQuote ? open.data : null;
+  const ctx = isBook ? open.ctx : null;
 
-  // Gợi ý theo LOẠI XE (số chỗ) cho dịch vụ.
   let suggest: SeatGroup[] = [];
   if (svc) {
     const groups = groupCarsBySeats(cars);
@@ -56,15 +66,42 @@ export function ContactSheet({
     if (suggest.length === 0) suggest = groups;
   }
 
-  const heading = isQuote
-    ? "Yêu cầu báo giá"
+  const modeText = ctx?.mode === "self" ? "Tự lái" : ctx?.mode === "driver" ? "Có tài xế" : null;
+  const summaryRows: [string, string][] = ctx
+    ? ([
+        ctx.seatsLabel ? ["Loại xe", ctx.seatsLabel] : null,
+        modeText ? ["Hình thức", modeText] : null,
+        ctx.days ? ["Số ngày", `${ctx.days} ngày`] : null,
+        ctx.far ? ["Lưu ý", "Đi xa / qua đêm"] : null,
+      ].filter(Boolean) as [string, string][])
+    : [];
+
+  const heading = isBook
+    ? "Để nhà xe gọi lại"
     : isService
       ? `Cần xe · ${svc!.label}`
       : isCall
         ? "Gọi cho nhà xe"
         : "Nhắn Zalo cho nhà xe";
 
-  const HeadIcon = isQuote ? Sparkles : isService ? SVC_ICON[svc!.icon] : isCall ? Phone : MessageCircle;
+  const HeadIcon = isBook ? Sparkles : isService ? SVC_ICON[svc!.icon] : isCall ? Phone : MessageCircle;
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus("sending");
+    const res = await submitBooking({
+      phone,
+      name,
+      source: ctx?.source ?? "book",
+      seatsLabel: ctx?.seatsLabel,
+      seats: ctx?.seats,
+      mode: ctx?.mode,
+      days: ctx?.days,
+      far: ctx?.far,
+      total: ctx?.total,
+    });
+    setStatus(res.ok ? "ok" : "error");
+  }
 
   return (
     <div
@@ -79,7 +116,7 @@ export function ContactSheet({
 
         <div className="flex items-center gap-3.5">
           <div className="grid h-[52px] w-[52px] shrink-0 place-items-center rounded-[14px] bg-ink text-white">
-            <HeadIcon size={24} />
+            {isBook && status === "ok" ? <Check size={24} /> : <HeadIcon size={24} />}
           </div>
           <div>
             <div className="text-[13.5px] font-medium text-muted">{heading}</div>
@@ -87,56 +124,121 @@ export function ContactSheet({
           </div>
         </div>
 
-        {isQuote && q && (
-          <div className="mt-[18px] rounded-xl border border-hairline bg-bg px-4 py-3.5">
-            {[
-              ["Loại xe", q.label],
-              ["Hình thức", q.mode === "self" ? "Tự lái" : "Có tài xế"],
-              ["Số ngày", `${q.days} ngày`],
-              ...(q.far ? [["Lưu ý", "Đi xa / qua đêm"]] : []),
-            ].map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-3 py-1 text-[14.5px]">
-                <span className="muted">{k}</span>
-                <span className="font-semibold">{v}</span>
+        {/* ----- BOOK: form đặt xe nhanh ----- */}
+        {isBook ? (
+          status === "ok" ? (
+            <>
+              <p className="mt-[18px] rounded-xl border border-hairline bg-bg px-4 py-3.5 text-[15.5px] leading-relaxed">
+                Đã nhận thông tin. Nhà xe sẽ <b>gọi lại cho bạn ngay</b>. Cảm ơn quý khách!
+              </p>
+              <a href={tel} className="btn btn-primary mt-[18px]">
+                <Phone size={19} /> Gọi luôn cho nhanh
+              </a>
+              <a href={zaloLink} target="_blank" rel="noreferrer" className="btn btn-ghost mt-2.5">
+                <MessageCircle size={19} /> Nhắn Zalo
+              </a>
+              <button type="button" onClick={onClose} className="btn btn-ghost mt-2.5 border-none">
+                Đóng
+              </button>
+            </>
+          ) : (
+            <form onSubmit={onSubmit}>
+              {summaryRows.length > 0 && (
+                <div className="mt-[18px] rounded-xl border border-hairline bg-bg px-4 py-3">
+                  {summaryRows.map(([k, v]) => (
+                    <div key={k} className="flex justify-between gap-3 py-0.5 text-[14px]">
+                      <span className="muted">{k}</span>
+                      <span className="font-semibold">{v}</span>
+                    </div>
+                  ))}
+                  {ctx?.total ? (
+                    <div className="mt-1.5 flex items-baseline justify-between gap-3 border-t border-hairline pt-2">
+                      <span className="font-semibold">Tạm tính</span>
+                      <span className="text-[19px] font-extrabold tracking-[-0.03em]">
+                        {formatVnd(ctx.total)} đ
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+
+              <p className="mt-[18px] text-[14.5px] text-muted">
+                Để lại số điện thoại, nhà xe gọi lại tư vấn & giữ xe cho bạn:
+              </p>
+              <input
+                name="phone"
+                type="tel"
+                inputMode="tel"
+                required
+                autoFocus
+                placeholder="Số điện thoại của bạn *"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className={`${inputClass} mt-2.5`}
+              />
+              <input
+                name="name"
+                type="text"
+                placeholder="Tên của bạn (không bắt buộc)"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={`${inputClass} mt-2.5`}
+              />
+
+              {status === "error" && (
+                <p className="mt-2.5 text-[14px] text-clay" style={{ color: "#b4321f" }}>
+                  Số điện thoại chưa hợp lệ. Bà con thử lại hoặc gọi trực tiếp giúp nhé.
+                </p>
+              )}
+
+              <button
+                type="submit"
+                className="btn btn-primary mt-[18px]"
+                disabled={status === "sending"}
+                style={{ opacity: status === "sending" ? 0.7 : 1 }}
+              >
+                {status === "sending" ? "Đang gửi…" : "Gửi — nhà xe gọi lại"}
+              </button>
+              <a href={tel} className="btn btn-ghost mt-2.5">
+                <Phone size={19} /> Hoặc gọi luôn 0326 120 108
+              </a>
+            </form>
+          )
+        ) : (
+          <>
+            {/* ----- SERVICE: gợi ý loại xe ----- */}
+            {isService && (
+              <div className="mt-[18px] rounded-xl border border-hairline bg-bg px-4 py-3.5">
+                <div className="text-[12.5px] font-semibold uppercase tracking-wide text-muted">
+                  Đang sẵn xe phù hợp · bấm để xem
+                </div>
+                <div className="mt-2.5 flex flex-wrap gap-2">
+                  {suggest.map((g) => (
+                    <button
+                      key={g.seats}
+                      onClick={() => g.cars[0] && onPickCar(g.cars[0].slug)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-3 py-2 text-sm font-semibold"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                      {g.label}
+                      <ArrowRight size={15} className="text-muted" />
+                    </button>
+                  ))}
+                </div>
               </div>
-            ))}
-            <div className="mt-2 flex items-baseline justify-between gap-3 border-t border-hairline pt-2.5">
-              <span className="font-semibold">Tạm tính</span>
-              <span className="text-[21px] font-extrabold tracking-[-0.03em]">{formatVnd(q.total)} đ</span>
-            </div>
-          </div>
-        )}
+            )}
 
-        {isService && (
-          <div className="mt-[18px] rounded-xl border border-hairline bg-bg px-4 py-3.5">
-            <div className="text-[12.5px] font-semibold uppercase tracking-wide text-muted">
-              Đang sẵn xe phù hợp · bấm để xem
-            </div>
-            <div className="mt-2.5 flex flex-wrap gap-2">
-              {suggest.map((g) => (
-                <button
-                  key={g.seats}
-                  onClick={() => g.cars[0] && onPickCar(g.cars[0].slug)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-3 py-2 text-sm font-semibold"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                  {g.label}
-                  <ArrowRight size={15} className="text-muted" />
-                </button>
-              ))}
-            </div>
-          </div>
+            <a href={tel} className="btn btn-primary mt-[18px]">
+              <Phone size={19} /> Gọi ngay
+            </a>
+            <a href={zaloLink} target="_blank" rel="noreferrer" className="btn btn-ghost mt-2.5">
+              <MessageCircle size={19} /> Nhắn Zalo
+            </a>
+            <button type="button" onClick={onClose} className="btn btn-ghost mt-2.5 border-none">
+              Đóng
+            </button>
+          </>
         )}
-
-        <a href={tel} className="btn btn-primary mt-[18px]">
-          <Phone size={19} /> Gọi ngay
-        </a>
-        <a href={zaloLink} target="_blank" rel="noreferrer" className="btn btn-ghost mt-2.5">
-          <MessageCircle size={19} /> Nhắn Zalo
-        </a>
-        <button type="button" onClick={onClose} className="btn btn-ghost mt-2.5 border-none">
-          Đóng
-        </button>
       </div>
     </div>
   );

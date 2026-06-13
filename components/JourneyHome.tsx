@@ -22,6 +22,7 @@ import { BRAND } from "@/config/brand";
 import { SERVICES, type ServiceIcon } from "@/config/services";
 import type { Car, Testimonial } from "@/types/db";
 import { useContactActions } from "@/components/ContactProvider";
+import type { BookingContext } from "@/hooks/useContact";
 import { JourneyRail, Chapter } from "@/components/JourneyRail";
 import { HeroShowcase } from "@/components/HeroShowcase";
 import { QuickQuote } from "@/components/QuickQuote";
@@ -73,7 +74,15 @@ function priceCol(label: string, price: string | null, old: string | null, fromL
 }
 
 /** Thẻ "loại xe theo số chỗ": giá tài xế/tự lái + danh sách xe thật trong loại. */
-function SeatGroupCard({ group, onCall }: { group: SeatGroup; onCall: () => void }) {
+function SeatGroupCard({
+  group,
+  onCall,
+  onBook,
+}: {
+  group: SeatGroup;
+  onCall: () => void;
+  onBook: (ctx: BookingContext) => void;
+}) {
   const fromLabel = group.multiple ? "từ " : "";
   return (
     <div className="card car-card" style={{ overflow: "hidden" }} data-testid="seat-card">
@@ -121,8 +130,19 @@ function SeatGroupCard({ group, onCall }: { group: SeatGroup; onCall: () => void
           })}
         </div>
 
-        <button className="btn btn-primary btn-sm" style={{ marginTop: 14, width: "100%" }} onClick={onCall}>
-          <Phone size={17} /> Gọi tư vấn loại {group.label}
+        <button
+          className="btn btn-primary btn-sm"
+          style={{ marginTop: 14, width: "100%" }}
+          onClick={() => onBook({ source: "seat", seatsLabel: group.label, seats: group.seats })}
+        >
+          <Phone size={17} /> Để nhà xe gọi lại
+        </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          style={{ marginTop: 8, width: "100%" }}
+          onClick={onCall}
+        >
+          Gọi tư vấn ngay
         </button>
       </div>
     </div>
@@ -136,7 +156,7 @@ export default function JourneyHome({
   cars: Car[];
   testimonials: Testimonial[];
 }) {
-  const { call, zalo, service, quote } = useContactActions();
+  const { call, zalo, service, book } = useContactActions();
   const groups: SeatGroup[] = groupCarsBySeats(cars);
 
   const mapEmbed = `https://www.openstreetmap.org/export/embed.html?bbox=${BRAND.lng - 0.01},${BRAND.lat - 0.01},${BRAND.lng + 0.01},${BRAND.lat + 0.01}&layer=mapnik&marker=${BRAND.lat},${BRAND.lng}`;
@@ -231,7 +251,7 @@ export default function JourneyHome({
                 key={g.seats}
                 style={{ top: 78 + i * 12, zIndex: i + 1, marginBottom: i === groups.length - 1 ? 0 : 22, paddingBottom: 22 }}
               >
-                <SeatGroupCard group={g} onCall={call} />
+                <SeatGroupCard group={g} onCall={call} onBook={book} />
               </div>
             ))}
           </div>
@@ -242,7 +262,7 @@ export default function JourneyHome({
 
         {/* 03 — Báo giá nhanh */}
         <Chapter n="03" tag="Báo giá" label="Tính nhanh chi phí">
-          <QuickQuote groups={groups} onQuote={quote} />
+          <QuickQuote groups={groups} onBook={book} />
         </Chapter>
 
         {/* 04 — Lựa chọn */}

@@ -3,26 +3,28 @@
 import { useState } from "react";
 import type { Service } from "@/config/services";
 
-/** Tóm tắt yêu cầu báo giá từ QuickQuote (chương 03) — theo SỐ CHỖ. */
-export type QuoteRequest = {
-  label: string; // "7 chỗ"
-  mode: "driver" | "self";
-  days: number;
-  far: boolean;
-  total: number;
+/** Ngữ cảnh đính kèm khi khách đặt xe (từ báo giá hoặc thẻ số chỗ). */
+export type BookingContext = {
+  source: string; // 'quote' | 'seat'
+  seatsLabel?: string; // "7 chỗ"
+  seats?: number;
+  mode?: "driver" | "self";
+  days?: number;
+  far?: boolean;
+  total?: number;
 };
 
 /**
- * Trạng thái sheet liên hệ — 4 kiểu:
- *   "call" | "zalo"                       — gọi/Zalo thường (sticky bar, CTA)
- *   { kind:"service", service }           — bấm 1 dịch vụ ở chương 01 → gợi ý xe
- *   { kind:"quote",   data: QuoteRequest} — "Gửi yêu cầu" từ QuickQuote (ch.03)
+ * Trạng thái sheet liên hệ:
+ *   "call" | "zalo"               — gọi/Zalo thường
+ *   { kind:"service", service }   — bấm 1 dịch vụ → gợi ý loại xe
+ *   { kind:"book", ctx }          — "Để nhà xe gọi lại" (đặt xe nhanh)
  */
 export type ContactState =
   | "call"
   | "zalo"
   | { kind: "service"; service: Service }
-  | { kind: "quote"; data: QuoteRequest }
+  | { kind: "book"; ctx: BookingContext }
   | null;
 
 export function useContact() {
@@ -32,7 +34,7 @@ export function useContact() {
     call: () => setOpen("call"),
     zalo: () => setOpen("zalo"),
     service: (s: Service) => setOpen({ kind: "service", service: s }),
-    quote: (data: QuoteRequest) => setOpen({ kind: "quote", data }),
+    book: (ctx: BookingContext) => setOpen({ kind: "book", ctx }),
     close: () => setOpen(null),
   };
 }

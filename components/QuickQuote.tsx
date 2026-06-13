@@ -4,18 +4,18 @@ import { useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { parsePrice, formatVnd } from "@/config/services";
 import type { SeatGroup } from "@/lib/seatGroups";
-import type { QuoteRequest } from "@/hooks/useContact";
+import type { BookingContext } from "@/hooks/useContact";
 
 /**
  * QuickQuote — báo giá nhanh theo SỐ CHỖ: chọn loại (5/7/16 chỗ) → hình thức →
- * số ngày → (đi xa?) → tạm tính ngay. "Gửi yêu cầu" → ContactSheet kiểu quote.
+ * số ngày → (đi xa?) → tạm tính ngay. "Gửi yêu cầu" → sheet đặt xe (để lại SĐT).
  */
 export function QuickQuote({
   groups,
-  onQuote,
+  onBook,
 }: {
   groups: SeatGroup[];
-  onQuote: (req: QuoteRequest) => void;
+  onBook: (ctx: BookingContext) => void;
 }) {
   const [seats, setSeats] = useState(groups[0]?.seats ?? 0);
   const [mode, setMode] = useState<"driver" | "self">("driver");
@@ -136,7 +136,9 @@ export function QuickQuote({
       <button
         className="btn btn-primary"
         style={{ marginTop: 18 }}
-        onClick={() => onQuote({ label: g.label, mode, days, far, total })}
+        onClick={() =>
+          onBook({ source: "quote", seatsLabel: g.label, seats: g.seats, mode, days, far, total })
+        }
       >
         <MessageCircle size={18} /> Gửi yêu cầu này
       </button>
