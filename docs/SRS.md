@@ -57,3 +57,38 @@ không rành công nghệ → ưu tiên **gọi/Zalo** và **để lại SĐT ch
 - Xem đơn đặt xe → bảng **`bookings`** (status: new→called→booked) + Telegram.
 - FB: tự đăng 3 lần/ngày; muốn đăng thêm → GitHub Actions → "Auto-post to Facebook Page" → Run (có dry-run).
 - Khuyến mãi/nhãn → `config/promos.ts`. Liên hệ/thương hiệu → `config/brand.ts`.
+
+## 9. Yêu cầu phi chức năng (NFR)
+- **Mobile-first**, cột tối đa 448px; nút ≥48px; chữ ≥15px; tải tốt trên 3G.
+- **Hiệu năng**: ảnh `next/image`; container nhẹ (standalone); animation chỉ transform/opacity.
+- **A11y**: alt/aria-label nút icon, focus-visible; **mọi animation tôn trọng `prefers-reduced-motion`**.
+- **SEO địa phương**: title/OG/schema.org, sitemap, robots; canonical về domain chính.
+- **Độ bền**: booking/Telegram/FB là **best-effort** — backend lỗi không chặn khách.
+
+## 10. Bảo mật & secrets
+- **Phân loại khóa Supabase**: `anon/publishable` (chỉ đọc theo RLS — công khai được, dùng cho web) · `service_role/secret` (bỏ qua RLS — **CHỈ** để ở `.env.local` máy local cho việc quản trị, **KHÔNG** đưa lên Dokploy/Git).
+- **Secrets KHÔNG commit**: `.env*` đã gitignore. Token FB/Groq/Telegram + Dokploy API key để ở **GitHub Secrets** / **Dokploy env**.
+- **Rotate khi lộ**: Groq (console.groq.com), FB App Secret (App Settings → Reset → lấy lại Page token), Telegram (@BotFather /revoke), Supabase (API Keys → roll). Báo để cập nhật lại env/secret.
+- **Không tự động hoá vi phạm ToS**: không dùng bot tạo/đăng nhập tài khoản Google/Zalo/Facebook hộ — các bước xác minh do chủ xe làm thủ công.
+
+## 11. Sao lưu & khôi phục
+- **Code**: Git (GitHub) là bản sao lưu; deploy tái lập từ Dockerfile.
+- **Dữ liệu**: Supabase (Postgres) — dữ liệu nhỏ; nên export định kỳ (Table Editor / pg_dump) phòng hờ. Đơn `bookings` quan trọng → cân nhắc backup.
+- **Khôi phục web**: push lại `main` → GitHub Actions deploy → Dokploy dựng lại container.
+
+## 12. Kiểm thử
+- **E2E Playwright** (`npm run test:e2e`) — chạy ở **fixture mode** (env Supabase để trống) nên không đụng DB thật. Bao: home render, link tel/zalo, chi tiết xe, form đối tác, redirect `/`→`/vi`.
+- **Trước khi push**: `npm run build` + `npm run lint` sạch (chỉ còn 1 warning `<img>` ở Car3DViewer — chấp nhận).
+
+## 13. Quy trình phát triển (cập nhật chỉ cần SRS + CLAUDE.md)
+1. Sửa **code**. 2. `npm run build && npm run lint` (+ test nếu cần). 3. Push `main` → **tự deploy** → verify live.
+4. **Cập nhật `docs/SRS.md` + `CLAUDE.md`** cho mọi thay đổi đáng kể (tính năng, dữ liệu, tích hợp, env).
+→ Hai file này là **cửa ngõ ngữ cảnh**; code là sự thật triển khai; specs cũ trong `docs/superpowers/specs/` là lịch sử quyết định.
+
+## 14. Roadmap / còn thiếu
+- Ảnh xe thật (hero/gallery + **360° spin** ≥8 frame) → trải nghiệm tốt hơn nhiều.
+- File `.glb` 3D xe thật (hiện không bật model generic).
+- **ZNS** gửi xác nhận đặt xe (sau khi có MST + Zalo OA duyệt).
+- Google Business Profile verify (lên Maps).
+- Cân nhắc giảm tần suất FB post nếu reach giảm; thêm bài kèm ảnh.
+- (Tuỳ chọn) chuyển cron FB sang Dokploy nếu cần ổn định hơn GitHub Actions.
