@@ -92,3 +92,69 @@ không rành công nghệ → ưu tiên **gọi/Zalo** và **để lại SĐT ch
 - Google Business Profile verify (lên Maps).
 - Cân nhắc giảm tần suất FB post nếu reach giảm; thêm bài kèm ảnh.
 - (Tuỳ chọn) chuyển cron FB sang Dokploy nếu cần ổn định hơn GitHub Actions.
+
+---
+
+# PHẦN B — Định hướng phát triển (cho ver tiếp theo)
+
+## 15. Phiên bản
+- **v1** — "tờ rơi bấm gọi" (spec gốc `SPEC.md`).
+- **v2 (đang chạy)** — UI "Một hành trình", định giá theo số chỗ, đặt xe nhanh + Telegram, FB auto-post (Groq), rebrand + domain, deploy Dokploy/Actions.
+- **v-next (v3)** — xem §18. Trọng tâm đề xuất: **ảnh/360 thật + đa chủ xe (multi-vendor) lên thật + ZNS xác nhận đặt**.
+
+## 16. Sơ đồ kiến trúc
+```
+Khách (mobile)
+   │ HTTPS
+Cloudflare  (DNS + TLS, *.autocontent.click)
+   │ proxy → origin 160.250.134.226
+Dokploy / Traefik ──► Next.js (standalone container, server runtime env)
+                         ├─► Supabase (Postgres + RLS): cars, car_photos, bookings, testimonials, owners, partner_inquiries
+                         └─► Telegram Bot API (báo đơn realtime)
+GitHub Actions
+   ├─ deploy.yml   (push main)       ──► Dokploy API → build + release
+   └─ fb-post.yml  (cron 3×/ngày)    ──► Groq (LLM) ──► Facebook Graph API (đăng bài)
+Quản trị: chủ xe sửa dữ liệu trong Supabase Table Editor (không có portal riêng)
+```
+
+## 17. Từ điển dữ liệu (tham chiếu nhanh)
+- **owners**: `name, phone, zalo, facebook, photo_url, address, is_primary`. (Hiện app hiển thị chủ xe từ `config/brand.ts`; owners dùng cho liên kết + multi-vendor sau.)
+- **cars**: `slug` (URL), `name, type, seats, description, price_with_driver, price_self_drive, badge, photo_count, model_3d_url, poster_url, available, featured, owner_id`.
+- **car_photos**: `car_id, url, sort_order, kind` (`photo` | `spin_frame` cho 360°).
+- **testimonials**: `author_name, content, place, rating, approved`.
+- **bookings**: `phone, name, seats, mode(driver|self), days, far, total, note, source, status(new|called|booked|cancelled)`.
+- **partner_inquiries**: `name, phone, car_info, note, status`.
+- *Không trong DB:* khuyến mãi (`config/promos.ts` theo slug), dịch vụ + gợi ý số chỗ (`config/services.ts`), thương hiệu (`config/brand.ts`).
+
+## 18. Backlog v-next (ưu tiên)
+**P0 — giá trị cao, chặn trải nghiệm thật**
+- Ảnh xe thật: hero/gallery + **360° spin** (≥8 frame, dùng `car_photos.kind='spin_frame'` đã sẵn).
+- **ZNS** xác nhận đặt xe qua Zalo (sau khi có MST + OA duyệt) — nối vào `submitBooking`.
+- Đưa **đa chủ xe (multi-vendor) lên thật**: thêm `owner` + `cars` trong Supabase; cân nhắc hiển thị tên/owner theo `owners` thay vì chỉ `config/brand`.
+
+**P1 — tăng chuyển đổi / vận hành**
+- Google Business Profile (Maps) verify; thu thập + duyệt đánh giá thật (`testimonials.approved`).
+- FB post kèm **ảnh** (Graph `/photos`); tinh chỉnh tần suất theo reach.
+- Trang/ý đơn giản xem `bookings` (nếu Supabase Table Editor chưa đủ) — vẫn tránh portal nặng.
+- Lọc/giá theo **đi xa (km/tuyến)** nếu chủ xe muốn rõ ràng hơn "báo giá khi gọi".
+
+**P2 — mở rộng**
+- i18n nội dung tiếng Anh (khung đã có); bộ chọn ngôn ngữ.
+- Khuyến mãi quản lý trong DB (cột) thay vì config, để chủ tự bật/tắt.
+- Analytics (lượt xem/cuộc gọi/đơn) — vd Plausible/GA + đếm click CTA.
+- Chuyển cron FB sang Dokploy; thêm hàng đợi/retry cho thông báo.
+
+## 19. Ngoài phạm vi (non-goals — giữ để khỏi phình)
+- Thanh toán online; lịch đặt giờ/giữ chỗ phức tạp; app native.
+- Tài khoản/đăng nhập cho khách.
+- Portal admin nặng (dùng Supabase Table Editor).
+- Tự động hoá bằng bot các bước cần xác minh danh tính (Google/Zalo/FB) — luôn thủ công.
+
+## 20. Quyết định cần chốt cho v-next (open questions)
+- Multi-vendor: hiển thị **tên từng chủ xe** (owners) hay gộp dưới 1 thương hiệu? Hoa hồng/điều phối ra sao?
+- Khuyến mãi: giữ ở `config/promos.ts` hay đưa vào DB cho chủ tự sửa?
+- Đặt xe: có cần **chọn ngày** (lightweight) hay vẫn chỉ "để lại SĐT"?
+- FB: tần suất tối ưu (1–3×/ngày) + có cần ảnh mỗi bài?
+- ZNS: mẫu tin xác nhận gồm gì; chi phí/tin chấp nhận được không?
+
+> Khi bắt đầu một hạng mục v-next: cập nhật mục tương ứng ở đây + ghi quyết định mới vào `docs/superpowers/specs/` rồi mới code (theo §13).
