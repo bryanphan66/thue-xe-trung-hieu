@@ -10,7 +10,7 @@ export const BRAND = {
   phone: "0326 120 108",        // hiển thị
   phoneRaw: "0326120108",       // dùng cho tel:
   zalo: "0326120108",           // https://zalo.me/<zalo>
-  facebook: "fb.com/thuexeangiang",
+  facebook: "fb.com/thuexeangiang.tmt",
   address: "Khu dân cư kênh 10, ấp Bờ Dâu, xã Thạnh Mỹ Tây, Tỉnh An Giang",
 
   // Bản đồ
