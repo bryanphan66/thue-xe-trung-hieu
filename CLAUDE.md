@@ -27,6 +27,7 @@ Web cho thuê xe vùng quê (An Giang). **Hiện trạng đầy đủ: đọc `d
 6. **`localeDetection: false`** trong `i18n/routing.ts` → `/` luôn về `/vi` (ưu tiên tiếng Việt).
 7. **Định giá theo SỐ CHỖ**: gom xe qua `lib/seatGroups.ts`; **khuyến mãi ở `config/promos.ts`** (không trong DB). Đừng quay lại định giá theo hãng.
 8. **Output standalone** (`next.config.ts`) — Dockerfile copy `.next/standalone` + chạy `node server.js`.
+8b. **Ảnh: `images.unoptimized:true`** — phục vụ thẳng Supabase Storage CDN (Singapore) vì Cloudflare KHÔNG cache `/_next/image` (về origin Dokploy VN ~1.4s/tấm → chậm trên mobile). Ảnh import đã pre-resize 1280px/q78. ĐỪNG bật lại optimizer trừ khi có CDN cache cho `/_next/image`.
 9. **Không bot tạo/đăng nhập tài khoản** Google/Zalo/Facebook (ToS) — xác minh do chủ xe làm. `service_role` key chỉ ở `.env.local` máy local, KHÔNG lên Dokploy/Git.
 
 ## Quy ước

@@ -22,11 +22,12 @@ async function ensureBucket() {
   const { data } = await sb.storage.getBucket(BUCKET);
   if (!data) { await sb.storage.createBucket(BUCKET, { public: true }); console.log(`Đã tạo bucket public '${BUCKET}'`); }
 }
-async function optimize(path, w = 1600) {
-  return sharp(readFileSync(path)).rotate().resize(w, null, { withoutEnlargement: true }).jpeg({ quality: 82, mozjpeg: true }).toBuffer();
+async function optimize(path, w = 1280) {
+  // unoptimized:true ở next.config → ảnh này phục vụ thẳng cho client, nên resize web-size + nén kỹ.
+  return sharp(readFileSync(path)).rotate().resize(w, null, { withoutEnlargement: true }).jpeg({ quality: 78, mozjpeg: true }).toBuffer();
 }
 async function uploadPublic(destPath, buf) {
-  await sb.storage.from(BUCKET).upload(destPath, buf, { contentType: "image/jpeg", upsert: true });
+  await sb.storage.from(BUCKET).upload(destPath, buf, { contentType: "image/jpeg", upsert: true, cacheControl: "604800" });
   return sb.storage.from(BUCKET).getPublicUrl(destPath).data.publicUrl;
 }
 
